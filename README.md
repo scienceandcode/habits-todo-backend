@@ -19,6 +19,18 @@ O HabitsTodo é um aplicativo assistente de hábitos que auxilia no monitorament
   - [ ] v1 - push notifications para o usuário
   - [ ] v2 - vincular google agenda.
 
+## Data models
+
+- https://app.eraser.io/workspace/ae5Yr05DqVKMCY5fjlKV
+
+## Technologies
+
+- Back-end:
+  - Go (AWS Lambda)
+  - CockroachDB (postgres)
+- Front-end:
+  - KMM (Kotlin Multiplatform): Android and IOS 
+
 ## Setup
 ...
 
