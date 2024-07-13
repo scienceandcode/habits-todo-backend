@@ -4,7 +4,7 @@
 
 O HabitsTodo é um aplicativo assistente de hábitos que auxilia no monitoramento e motivação de seus hábitos e tarefas.
 
-## Features 
+## Funcionalidades
 
 - [ ] Registro e Autenticação
 - [ ] Cadastro de hábitos (frequencia e dificuldade de execução)
@@ -19,11 +19,11 @@ O HabitsTodo é um aplicativo assistente de hábitos que auxilia no monitorament
   - [ ] v1 - push notifications para o usuário
   - [ ] v2 - vincular google agenda.
 
-## Data models
+## Modelo de entidades e relacionamentos
 
 - https://app.eraser.io/workspace/ae5Yr05DqVKMCY5fjlKV
 
-## Technologies
+## Tecnologias Utilizadas
 
 - Back-end:
   - Go (AWS Lambda)
@@ -34,14 +34,14 @@ O HabitsTodo é um aplicativo assistente de hábitos que auxilia no monitorament
 ## Setup
 ...
 
-### Dependencies
+### Dependências
 ...
 
-### Installing
+### Instalação
 ...
 
-## How to contribute
+## Como contribuir
 ...
 
-## Project History
+## Histórico do projeto
 ...
