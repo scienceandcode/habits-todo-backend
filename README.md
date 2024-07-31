@@ -6,8 +6,8 @@ O HabitsTodo é um aplicativo assistente de hábitos que auxilia no monitorament
 
 ## Funcionalidades
 
-- [ ] Registro e Autenticação
-- [ ] Cadastro de hábitos (frequencia e dificuldade de execução)
+- [ ] Registro e Autenticação (confirmação de e-mail)
+- [ ] Cadastro de hábitos (com frequência)
 - [ ] Cadastro de motivadores:
   - [ ] v1 - Cadastro 100% manual;
   - [ ] v2 - IA sugere motivadores no cadastro;
@@ -16,8 +16,8 @@ O HabitsTodo é um aplicativo assistente de hábitos que auxilia no monitorament
 - [ ] Histórico de tarefas
 - [ ] Gerar métricas de adesão nos hábitos (Percentual de adesão de hábitos cumpridos)
 - [ ] Notificar o usuário das tarefas que precisam ser realizadas com base num horário marcado:
-  - [ ] v1 - push notifications para o usuário
-  - [ ] v2 - vincular google agenda.
+  - [ ] v1 - vincular google agenda.
+- [ ] Receber sugestões de funcionalidades do usuário.
 
 ## Modelo de entidades e relacionamentos
 
