@@ -3,8 +3,8 @@
 <h1 align="center">HabitsTodo - Backend</h1>
 
 O HabitsTodo é um aplicativo assistente de hábitos que auxilia no monitoramento e motivação de seus hábitos e tarefas.
-Este repositório contém o back-end com todas funcionalidades (API first) do projeto.
-O repositório com o front-end (aplicativo KMM) está [neste repositório](https://github.com/scienceandcode/habits-todo-front-end).
+
+Este repositório contém o back-end com todas funcionalidades (API first) do projeto. O repositório com o front-end (aplicativo KMM) está [neste repositório](https://github.com/scienceandcode/habits-todo-front-end).
 
 ## Funcionalidades
 
