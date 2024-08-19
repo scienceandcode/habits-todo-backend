@@ -1,6 +1,6 @@
 <p align="center"><img src="https://github.com/Matheus-Lara/science-and-code/assets/63257275/d84b82bc-7597-434f-840c-6d2507e8b85d"></img></p>
 
-<h1 align="center">HabitsTodo</h1>
+<h1 align="center">HabitsTodo - Backend</h1>
 
 O HabitsTodo é um aplicativo assistente de hábitos que auxilia no monitoramento e motivação de seus hábitos e tarefas.
 
