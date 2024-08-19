@@ -26,10 +26,12 @@ O HabitsTodo é um aplicativo assistente de hábitos que auxilia no monitorament
 ## Tecnologias Utilizadas
 
 - Back-end:
-  - Go (AWS Lambda)
+  - Go lang
+    - GIN Framework
+    - AWS lambda (infraestrutura)
   - CockroachDB (postgres)
 - Front-end:
-  - KMM (Kotlin Multiplatform): Android and IOS 
+  - KMM (Kotlin Multiplatform Mobile): Android and IOS 
 
 ## Setup
 ...
