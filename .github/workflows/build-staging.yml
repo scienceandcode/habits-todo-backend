@@ -33,4 +33,4 @@ jobs:
 
     - name: Push Docker image
       run: |
-        docker push ${{ github.repository }}:staging
+        docker push ghcr.io/${{ github.repository }}:staging
