@@ -55,5 +55,5 @@ jobs:
           ECR_REPOSITORY: ${{ github.repository }}
           IMAGE_TAG: staging
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./build/docker/Dockerfile --build-arg APP_MODE="debug" --no-cache .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
