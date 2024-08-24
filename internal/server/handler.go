@@ -11,7 +11,7 @@ import (
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 )
 
-var ginLambda *ginadapter.GinLambda
+var ginLambda *ginadapter.GinLambdaV2
 
 func Handle(key string, app *gin.Engine) {
 	handlers := map[string]func(*gin.Engine){
@@ -22,8 +22,8 @@ func Handle(key string, app *gin.Engine) {
 			}
 		},
 		"lambda": func(app *gin.Engine) {
-			ginLambda = ginadapter.New(app)
-			lambda.Start(func(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+			ginLambda = ginadapter.NewV2(app)
+			lambda.Start(func(ctx context.Context, req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 				return ginLambda.ProxyWithContext(ctx, req)
 			})
 		},
