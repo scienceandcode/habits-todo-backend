@@ -17,7 +17,7 @@ func (httpServer *HttpServer) registerRoutes(app *gin.Engine) {
 	route.HealthRoutes(rootGroup)
 }
 
-func (httpServer *HttpServer) Run(httpHandlerKey string) {
+func (httpServer *HttpServer) Run() {
 	gin.SetMode(common.GetEnv("GIN_MODE"))
 	gin.DisableConsoleColor()
 
@@ -25,6 +25,7 @@ func (httpServer *HttpServer) Run(httpHandlerKey string) {
 
 	httpServer.registerRoutes(app)
 
+	httpHandlerKey := common.GetEnv("HTTP_SERVER_HANDLER")
 	Handle(httpHandlerKey, app)
 }
 
