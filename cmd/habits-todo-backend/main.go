@@ -25,6 +25,6 @@ func startHttpServer() {
 
 	httpServer := server.NewHttpServer(healthController)
 	log.Println("[HttpServer] Starting...")
-	go httpServer.Run()
+	go httpServer.Run(common.GetEnv("HTTP_SERVER_HANDLER"))
 	log.Println("[HttpServer] Started")
 }

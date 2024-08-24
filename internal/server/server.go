@@ -1,8 +1,6 @@
 package server
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/controller"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/route"
@@ -19,7 +17,7 @@ func (httpServer *HttpServer) registerRoutes(app *gin.Engine) {
 	route.HealthRoutes(rootGroup)
 }
 
-func (httpServer *HttpServer) Run() {
+func (httpServer *HttpServer) Run(httpHandlerKey string) {
 	gin.SetMode(common.GetEnv("GIN_MODE"))
 	gin.DisableConsoleColor()
 
@@ -27,10 +25,7 @@ func (httpServer *HttpServer) Run() {
 
 	httpServer.registerRoutes(app)
 
-	err := app.Run(":" + common.GetEnv("HTTP_SERVER_PORT"))
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	Handle(httpHandlerKey, app)
 }
 
 func NewHttpServer(
