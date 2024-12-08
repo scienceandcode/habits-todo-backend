@@ -15,7 +15,7 @@ jobs:
       IMAGE_TAG: latest
       APP_MODE: release
       IMAGE_REPOSITORY_NAME: ${{ github.repository }}
-      STAGING_FUNCTION_NAME: ${{ secrets.PRODUCTION_FUNCTION_NAME }}
+      PRODUCTION_FUNCTION_NAME: ${{ secrets.PRODUCTION_FUNCTION_NAME }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
