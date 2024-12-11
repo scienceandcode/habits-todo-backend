@@ -1,13 +1,14 @@
 services:
   postgres-db:
     container_name: postgres-db
-    image: postgres:15.10
+    build:
+      context: .docker/config/postgres
     platform: linux/x86_64
     restart: always
     environment:
-      - POSTGRES_USER: ${POSTGRES_USER-root}
-      - POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-rootpassword}
-      - POSTGRES_DB: ${POSTGRES_NAME-habits-todo}
+      POSTGRES_USER: "${POSTGRES_USER-root}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD-rootpassword}"
+      POSTGRES_DB: "${POSTGRES_NAME-habits_todo}"
     ports:
       - "${POSTGRES_PORT-5432}:5432"
     volumes:
