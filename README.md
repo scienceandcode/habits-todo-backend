@@ -36,13 +36,21 @@ Este repositório contém o back-end com todas funcionalidades (API first) do pr
   - KMM (Kotlin Multiplatform Mobile): Android and IOS 
 
 ## Setup
-...
+Para criar o .env e arquivos usados nos volumes dos containers docker:
+```
+make setup
+```
 
 ### Dependências
-...
+- [Go](https://go.dev/) - Linguagem de programação de código aberto que facilita a construção de software simples, confiável e eficiente.
+- [Docker](https://www.docker.com/) - Plataforma para desenvolvimento, envio e execução de aplicativos em contêineres.
+- [Docker Compose](https://docs.docker.com/compose/) - Ferramenta para definir e executar aplicativos Docker com múltiplos contêineres usando um arquivo YAML.
 
 ### Instalação
-...
+Para subir o container docker:
+```
+docker compose up
+```
 
 ## Como contribuir
 ...
