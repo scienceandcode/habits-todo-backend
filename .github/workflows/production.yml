@@ -1,0 +1,49 @@
+name: Deploy production
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  deploy-ecr:
+    env:
+      IMAGE_TAG: latest
+      APP_MODE: release
+      IMAGE_REPOSITORY_NAME: ${{ github.repository }}
+      PRODUCTION_FUNCTION_NAME: ${{ secrets.PRODUCTION_FUNCTION_NAME }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }} 
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/$IMAGE_REPOSITORY_NAME:$IMAGE_TAG -f ./build/docker/Dockerfile --build-arg APP_MODE=$APP_MODE --no-cache .
+          docker push $ECR_REGISTRY/$IMAGE_REPOSITORY_NAME:$IMAGE_TAG
+
+      - name: Update Lambda
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          aws lambda update-function-code \
+              --function-name $PRODUCTION_FUNCTION_NAME \
+              --image-uri $ECR_REGISTRY/$IMAGE_REPOSITORY_NAME:$IMAGE_TAG
