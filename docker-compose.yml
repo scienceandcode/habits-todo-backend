@@ -5,10 +5,10 @@ services:
     platform: linux/x86_64
     restart: always
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-root}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-rootpassword}
-      - POSTGRES_DB=${POSTGRES_NAME-habits:-todo}
+      - POSTGRES_USER: ${POSTGRES_USER-root}
+      - POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-rootpassword}
+      - POSTGRES_DB: ${POSTGRES_NAME-habits-todo}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${POSTGRES_PORT-5432}:5432"
     volumes:
-      - ${POSTGRES_DATA_DIR:-./.docker/data/postgres}:/var/lib/postgresql/data
+      - ${POSTGRES_DATA_DIR-.docker/data/postgres}:/var/lib/postgresql/data
