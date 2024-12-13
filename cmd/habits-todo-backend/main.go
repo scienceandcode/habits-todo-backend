@@ -8,6 +8,7 @@ import (
 	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
 	"github.com/scienceandcode/habits-todo-backend/internal/server"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
+	"github.com/scienceandcode/habits-todo-backend/pkg/db"
 )
 
 func main() {
@@ -24,6 +25,11 @@ func startHttpServer() {
 	healthController := controller.NewHealthController(service.NewHealthService())
 
 	httpServer := server.NewHttpServer(healthController)
+
+	log.Println("[Infrastructure] Connecting to database...")
+	db.Init()
+	log.Println("[Infrastructure] Database connected...")
+
 	log.Println("[HttpServer] Starting...")
 	go httpServer.Run()
 	log.Println("[HttpServer] Started")
