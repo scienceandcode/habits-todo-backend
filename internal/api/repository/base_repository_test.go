@@ -20,6 +20,7 @@ func setupTestDB() *gorm.DB {
 		panic("failed to connect database")
 	}
 	db.AutoMigrate(&TestEntity{})
+	db.Exec("DELETE FROM test_entities")
 	return db
 }
 
