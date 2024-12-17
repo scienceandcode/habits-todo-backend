@@ -1,9 +1,8 @@
-package repository_test
+package repository
 
 import (
 	"testing"
 
-	"github.com/scienceandcode/habits-todo-backend/internal/api/repository"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -26,7 +25,7 @@ func setupTestDB() *gorm.DB {
 
 func TestBaseRepository_Create(t *testing.T) {
 	db := setupTestDB()
-	repo := repository.NewBaseRepository[TestEntity](db)
+	repo := NewBaseRepository[TestEntity](db)
 
 	entity := &TestEntity{Name: "Test Name"}
 	err := repo.Create(entity)
@@ -37,7 +36,7 @@ func TestBaseRepository_Create(t *testing.T) {
 
 func TestBaseRepository_FindByID(t *testing.T) {
 	db := setupTestDB()
-	repo := repository.NewBaseRepository[TestEntity](db)
+	repo := NewBaseRepository[TestEntity](db)
 
 	entity := &TestEntity{Name: "Test Name"}
 	repo.Create(entity)
@@ -50,7 +49,7 @@ func TestBaseRepository_FindByID(t *testing.T) {
 
 func TestBaseRepository_FindAll(t *testing.T) {
 	db := setupTestDB()
-	repo := repository.NewBaseRepository[TestEntity](db)
+	repo := NewBaseRepository[TestEntity](db)
 
 	repo.Create(&TestEntity{Name: "Test 1"})
 	repo.Create(&TestEntity{Name: "Test 2"})
@@ -63,7 +62,7 @@ func TestBaseRepository_FindAll(t *testing.T) {
 
 func TestBaseRepository_Update(t *testing.T) {
 	db := setupTestDB()
-	repo := repository.NewBaseRepository[TestEntity](db)
+	repo := NewBaseRepository[TestEntity](db)
 
 	entity := &TestEntity{Name: "Old Name"}
 	repo.Create(entity)
@@ -79,7 +78,7 @@ func TestBaseRepository_Update(t *testing.T) {
 
 func TestBaseRepository_Delete(t *testing.T) {
 	db := setupTestDB()
-	repo := repository.NewBaseRepository[TestEntity](db)
+	repo := NewBaseRepository[TestEntity](db)
 
 	entity := &TestEntity{Name: "Test Name"}
 	repo.Create(entity)
@@ -95,7 +94,7 @@ func TestBaseRepository_Delete(t *testing.T) {
 
 func TestBaseRepository_Count(t *testing.T) {
 	db := setupTestDB()
-	repo := repository.NewBaseRepository[TestEntity](db)
+	repo := NewBaseRepository[TestEntity](db)
 
 	repo.Create(&TestEntity{Name: "Test 1"})
 	repo.Create(&TestEntity{Name: "Test 2"})
@@ -108,7 +107,7 @@ func TestBaseRepository_Count(t *testing.T) {
 
 func TestBaseRepository_Paginate(t *testing.T) {
 	db := setupTestDB()
-	repo := repository.NewBaseRepository[TestEntity](db)
+	repo := NewBaseRepository[TestEntity](db)
 
 	repo.Create(&TestEntity{Name: "Test 1"})
 	repo.Create(&TestEntity{Name: "Test 2"})
