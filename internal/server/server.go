@@ -16,6 +16,7 @@ func (httpServer *HttpServer) registerRoutes(app *gin.Engine) {
 	rootGroup := app.Group("/api")
 
 	route.HealthRoutes(rootGroup)
+	route.GoogleAuthRoutes(rootGroup.Group("/google/auth"))
 }
 
 func (httpServer *HttpServer) Run() {
