@@ -6,9 +6,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/controller"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
+	"github.com/scienceandcode/habits-todo-backend/internal/db"
 	"github.com/scienceandcode/habits-todo-backend/internal/server"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
-	"github.com/scienceandcode/habits-todo-backend/pkg/db"
 )
 
 func main() {
