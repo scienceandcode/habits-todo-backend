@@ -23,8 +23,12 @@ func main() {
 
 func startHttpServer() {
 	healthController := controller.NewHealthController(service.NewHealthService())
+	googleAuthController := controller.NewGoogleAuthController(service.NewGoogleAuthService())
 
-	httpServer := server.NewHttpServer(healthController)
+	httpServer := server.NewHttpServer(
+		healthController,
+		googleAuthController,
+	)
 
 	log.Println("[Infrastructure] Connecting to database...")
 	db.Init()

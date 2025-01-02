@@ -8,13 +8,15 @@ import (
 )
 
 type HttpServer struct {
-	healthController *controller.HealthController
+	healthController     *controller.HealthController
+	googleAuthController *controller.GoogleAuthController
 }
 
 func (httpServer *HttpServer) registerRoutes(app *gin.Engine) {
 	rootGroup := app.Group("/api")
 
 	route.HealthRoutes(rootGroup)
+	route.GoogleAuthRoutes(rootGroup.Group("/google/auth"))
 }
 
 func (httpServer *HttpServer) Run() {
@@ -31,8 +33,10 @@ func (httpServer *HttpServer) Run() {
 
 func NewHttpServer(
 	hc *controller.HealthController,
+	gac *controller.GoogleAuthController,
 ) *HttpServer {
 	return &HttpServer{
-		healthController: hc,
+		healthController:     hc,
+		googleAuthController: gac,
 	}
 }
