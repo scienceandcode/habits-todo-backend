@@ -22,19 +22,31 @@ func main() {
 }
 
 func startHttpServer() {
-	healthController := controller.NewHealthController(service.NewHealthService())
-	googleAuthController := controller.NewGoogleAuthController(service.NewGoogleAuthService())
+	httpServer := setupHttpServer()
 
-	httpServer := server.NewHttpServer(
-		healthController,
-		googleAuthController,
-	)
-
-	log.Println("[Infrastructure] Connecting to database...")
-	db.Init()
-	log.Println("[Infrastructure] Database connected...")
+	setupDatabase()
 
 	log.Println("[HttpServer] Starting...")
 	go httpServer.Run()
 	log.Println("[HttpServer] Started")
+}
+
+func setupHttpServer() *server.HttpServer {
+	healthController := controller.NewHealthController(service.NewHealthService())
+	googleAuthController := controller.NewGoogleAuthController(service.NewGoogleAuthService())
+
+	return server.NewHttpServer(
+		healthController,
+		googleAuthController,
+	)
+}
+
+func setupDatabase() {
+	log.Println("[Infrastructure] Connecting to database...")
+	gormDbConnection := db.Init()
+	log.Println("[Infrastructure] Database connected...")
+
+	log.Println("[Infrastructure] Migrating pending models...")
+	db.MigrateModels(gormDbConnection)
+	log.Println("[Infrastructure] Models migrated...")
 }

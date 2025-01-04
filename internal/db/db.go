@@ -26,3 +26,8 @@ func Init() *gorm.DB {
 
 	return db
 }
+
+func MigrateModels(db *gorm.DB) {
+	// Todo: create models
+	//db.AutoMigrate()
+}
