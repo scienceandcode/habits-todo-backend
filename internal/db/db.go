@@ -13,6 +13,10 @@ import (
 
 var gormDbConnection *gorm.DB
 
+func GetConnection() *gorm.DB {
+	return gormDbConnection
+}
+
 func InitTestDB() {
 	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	if err != nil {
@@ -45,8 +49,4 @@ func MigrateModels(db *gorm.DB) {
 	db.AutoMigrate(
 		&model.GoogleOAuthToken{},
 	)
-}
-
-func GetConnection() *gorm.DB {
-	return gormDbConnection
 }
