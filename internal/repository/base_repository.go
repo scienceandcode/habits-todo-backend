@@ -55,3 +55,12 @@ func (r *BaseRepository[T]) Paginate(page, pageSize int) ([]T, error) {
 	result := r.DB.Limit(pageSize).Offset(offset).Find(&entities)
 	return entities, result.Error
 }
+
+func (r *BaseRepository[T]) FindOneBy(condition map[string]interface{}) (*T, error) {
+	var entity T
+	result := r.DB.Where(condition).First(&entity)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &entity, nil
+}
