@@ -80,20 +80,20 @@ func EncryptAES(plainText string) string {
 	return base64.URLEncoding.EncodeToString(cipherText)
 }
 
-func DecryptAES(cipherText string) string {
+func DecryptAES(cipherText string) (string, error) {
 	key := GetEnv("APP_ENCRYPTION_CYPHER_TEXT")
 	cipherTextBytes, err := base64.URLEncoding.DecodeString(cipherText)
 	if err != nil {
-		log.Fatalf("Error while decoding base64: %v", err)
+		return "", err
 	}
 
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
-		log.Fatalf("Error while creating new cipher: %v", err)
+		return "", err
 	}
 
 	if len(cipherTextBytes) < aes.BlockSize {
-		log.Fatalf("cipherText too short")
+		return "", err
 	}
 
 	iv := cipherTextBytes[:aes.BlockSize]
@@ -102,5 +102,5 @@ func DecryptAES(cipherText string) string {
 	stream := cipher.NewCFBDecrypter(block, iv)
 	stream.XORKeyStream(cipherTextBytes, cipherTextBytes)
 
-	return string(cipherTextBytes)
+	return string(cipherTextBytes), nil
 }

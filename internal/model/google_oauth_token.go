@@ -29,8 +29,8 @@ func (token *GoogleOAuthToken) BeforeSave(tx *gorm.DB) error {
 }
 
 func (token *GoogleOAuthToken) AfterFind(tx *gorm.DB) error {
-	token.AccessToken = common.DecryptAES(token.AccessToken)
-	token.RefreshToken = common.DecryptAES(token.RefreshToken)
+	token.AccessToken, _ = common.DecryptAES(token.AccessToken)
+	token.RefreshToken, _ = common.DecryptAES(token.RefreshToken)
 
 	return nil
 }
