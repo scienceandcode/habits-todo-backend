@@ -61,7 +61,8 @@ func VerifyHMAC(str, key, receivedHMAC string) bool {
 	return calculatedHMAC == receivedHMAC
 }
 
-func EncryptAES(plainText, key string) string {
+func EncryptAES(plainText string) string {
+	key := GetEnv("APP_ENCRYPTION_CYPHER_TEXT")
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		log.Fatalf("Error while creating new cipher: %v", err)
@@ -79,7 +80,8 @@ func EncryptAES(plainText, key string) string {
 	return base64.URLEncoding.EncodeToString(cipherText)
 }
 
-func DecryptAES(cipherText, key string) string {
+func DecryptAES(cipherText string) string {
+	key := GetEnv("APP_ENCRYPTION_CYPHER_TEXT")
 	cipherTextBytes, err := base64.URLEncoding.DecodeString(cipherText)
 	if err != nil {
 		log.Fatalf("Error while decoding base64: %v", err)
