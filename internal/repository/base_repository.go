@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/scienceandcode/habits-todo-backend/internal/db"
 	"gorm.io/gorm"
 )
 
@@ -8,8 +9,8 @@ type BaseRepository[T any] struct {
 	DB *gorm.DB
 }
 
-func NewBaseRepository[T any](db *gorm.DB) *BaseRepository[T] {
-	return &BaseRepository[T]{DB: db}
+func NewBaseRepository[T any]() *BaseRepository[T] {
+	return &BaseRepository[T]{DB: db.GetConnection()}
 }
 
 func (r *BaseRepository[T]) Create(entity *T) error {

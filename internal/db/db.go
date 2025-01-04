@@ -7,8 +7,19 @@ import (
 	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+var gormDbConnection *gorm.DB
+
+func InitTestDB() {
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	gormDbConnection = db
+}
 
 func Init() *gorm.DB {
 	user := common.GetEnv("POSTGRES_USER")
@@ -25,6 +36,8 @@ func Init() *gorm.DB {
 		log.Fatalln(err)
 	}
 
+	gormDbConnection = db
+
 	return db
 }
 
@@ -32,4 +45,8 @@ func MigrateModels(db *gorm.DB) {
 	db.AutoMigrate(
 		&model.GoogleOAuthToken{},
 	)
+}
+
+func GetConnection() *gorm.DB {
+	return gormDbConnection
 }

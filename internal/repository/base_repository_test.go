@@ -3,9 +3,8 @@ package repository
 import (
 	"testing"
 
+	"github.com/scienceandcode/habits-todo-backend/internal/db"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 type TestEntity struct {
@@ -13,19 +12,15 @@ type TestEntity struct {
 	Name string `gorm:"size:255"`
 }
 
-func setupTestDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-	db.AutoMigrate(&TestEntity{})
-	db.Exec("DELETE FROM test_entities")
-	return db
+func setupTestDB() {
+	db.InitTestDB()
+	db.GetConnection().AutoMigrate(&TestEntity{})
+	db.GetConnection().Exec("DELETE FROM test_entities")
 }
 
 func TestBaseRepository_Create(t *testing.T) {
-	db := setupTestDB()
-	repo := NewBaseRepository[TestEntity](db)
+	setupTestDB()
+	repo := NewBaseRepository[TestEntity]()
 
 	entity := &TestEntity{Name: "Test Name"}
 	err := repo.Create(entity)
@@ -35,8 +30,8 @@ func TestBaseRepository_Create(t *testing.T) {
 }
 
 func TestBaseRepository_FindByID(t *testing.T) {
-	db := setupTestDB()
-	repo := NewBaseRepository[TestEntity](db)
+	setupTestDB()
+	repo := NewBaseRepository[TestEntity]()
 
 	entity := &TestEntity{Name: "Test Name"}
 	repo.Create(entity)
@@ -48,8 +43,8 @@ func TestBaseRepository_FindByID(t *testing.T) {
 }
 
 func TestBaseRepository_FindAll(t *testing.T) {
-	db := setupTestDB()
-	repo := NewBaseRepository[TestEntity](db)
+	setupTestDB()
+	repo := NewBaseRepository[TestEntity]()
 
 	repo.Create(&TestEntity{Name: "Test 1"})
 	repo.Create(&TestEntity{Name: "Test 2"})
@@ -61,8 +56,8 @@ func TestBaseRepository_FindAll(t *testing.T) {
 }
 
 func TestBaseRepository_Update(t *testing.T) {
-	db := setupTestDB()
-	repo := NewBaseRepository[TestEntity](db)
+	setupTestDB()
+	repo := NewBaseRepository[TestEntity]()
 
 	entity := &TestEntity{Name: "Old Name"}
 	repo.Create(entity)
@@ -77,8 +72,8 @@ func TestBaseRepository_Update(t *testing.T) {
 }
 
 func TestBaseRepository_Delete(t *testing.T) {
-	db := setupTestDB()
-	repo := NewBaseRepository[TestEntity](db)
+	setupTestDB()
+	repo := NewBaseRepository[TestEntity]()
 
 	entity := &TestEntity{Name: "Test Name"}
 	repo.Create(entity)
@@ -93,8 +88,8 @@ func TestBaseRepository_Delete(t *testing.T) {
 }
 
 func TestBaseRepository_Count(t *testing.T) {
-	db := setupTestDB()
-	repo := NewBaseRepository[TestEntity](db)
+	setupTestDB()
+	repo := NewBaseRepository[TestEntity]()
 
 	repo.Create(&TestEntity{Name: "Test 1"})
 	repo.Create(&TestEntity{Name: "Test 2"})
@@ -106,8 +101,8 @@ func TestBaseRepository_Count(t *testing.T) {
 }
 
 func TestBaseRepository_Paginate(t *testing.T) {
-	db := setupTestDB()
-	repo := NewBaseRepository[TestEntity](db)
+	setupTestDB()
+	repo := NewBaseRepository[TestEntity]()
 
 	repo.Create(&TestEntity{Name: "Test 1"})
 	repo.Create(&TestEntity{Name: "Test 2"})
