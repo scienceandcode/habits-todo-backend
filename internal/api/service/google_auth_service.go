@@ -21,6 +21,24 @@ func (*GoogleAuthService) BuildGoogleAuthURL() string {
 	return fmt.Sprintf(url, clientId, redirectUri, scope, nonce, state)
 }
 
+func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) error {
+	clientId := common.GetEnv("GOOGLE_CLOUD_CLIENT_ID")
+	//clientSecret := common.GetEnv("GOOGLE_CLOUD_CLIENT_SECRET")
+	//redirectUri := common.GetEnv("GOOGLE_CLOUD_REDIRECT_URI")
+
+	if !common.VerifyHMAC(clientId, common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY"), state) {
+		return fmt.Errorf("invalid state")
+	}
+
+	// TODO: exchange code for token
+	// TODO: handle token exchange error
+
+	// TODO: save token to database instantiating repository
+	// TODO: handle database save error
+
+	return nil
+}
+
 func NewGoogleAuthService() *GoogleAuthService {
 	return &GoogleAuthService{}
 }
