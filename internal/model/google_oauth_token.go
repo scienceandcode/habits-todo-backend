@@ -10,12 +10,14 @@ import (
 
 type GoogleOAuthToken struct {
 	ID           uint      `gorm:"primary_key" json:"id"`
+	UserEmail    string    `json:"user_email"`
 	AccessToken  string    `json:"access_token"`
 	TokenType    string    `json:"token_type"`
 	RefreshToken string    `json:"refresh_token"`
 	ExpiresIn    int       `json:"expires_in"`
 	Scope        string    `json:"scope"`
 	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 func (token *GoogleOAuthToken) BeforeCreate(tx *gorm.DB) error {
@@ -26,6 +28,7 @@ func (token *GoogleOAuthToken) BeforeCreate(tx *gorm.DB) error {
 func (token *GoogleOAuthToken) BeforeSave(tx *gorm.DB) error {
 	token.AccessToken = common.EncryptAES(token.AccessToken)
 	token.RefreshToken = common.EncryptAES(token.RefreshToken)
+	token.UpdatedAt = time.Now()
 
 	return nil
 }
