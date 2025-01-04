@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/scienceandcode/habits-todo-backend/internal/db"
 	"gorm.io/gorm"
 )
 
@@ -8,8 +9,8 @@ type BaseRepository[T any] struct {
 	DB *gorm.DB
 }
 
-func NewBaseRepository[T any](db *gorm.DB) *BaseRepository[T] {
-	return &BaseRepository[T]{DB: db}
+func NewBaseRepository[T any]() *BaseRepository[T] {
+	return &BaseRepository[T]{DB: db.GetConnection()}
 }
 
 func (r *BaseRepository[T]) Create(entity *T) error {
@@ -53,4 +54,13 @@ func (r *BaseRepository[T]) Paginate(page, pageSize int) ([]T, error) {
 	offset := (page - 1) * pageSize
 	result := r.DB.Limit(pageSize).Offset(offset).Find(&entities)
 	return entities, result.Error
+}
+
+func (r *BaseRepository[T]) FindOneBy(condition map[string]interface{}) (*T, error) {
+	var entity T
+	result := r.DB.Where(condition).First(&entity)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &entity, nil
 }

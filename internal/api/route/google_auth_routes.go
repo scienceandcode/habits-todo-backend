@@ -9,4 +9,5 @@ func GoogleAuthRoutes(group *gin.RouterGroup) {
 	controller := &controller.GoogleAuthController{}
 
 	group.GET("/setup", controller.StartGoogleAuthorization)
+	group.GET("/code", controller.AuthorizationCode)
 }

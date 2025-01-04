@@ -1,0 +1,14 @@
+{
+    // To install go debugger, run: go install github.com/go-delve/delve/cmd/dlv@latest
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/habits-todo-backend/main.go",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

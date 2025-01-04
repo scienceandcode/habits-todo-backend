@@ -16,25 +16,36 @@ func main() {
 
 	godotenv.Load()
 
+	setupDatabase()
 	startHttpServer()
 
 	common.WaitOsInterruption()
 }
 
 func startHttpServer() {
-	healthController := controller.NewHealthController(service.NewHealthService())
-	googleAuthController := controller.NewGoogleAuthController(service.NewGoogleAuthService())
-
-	httpServer := server.NewHttpServer(
-		healthController,
-		googleAuthController,
-	)
-
-	log.Println("[Infrastructure] Connecting to database...")
-	db.Init()
-	log.Println("[Infrastructure] Database connected...")
+	httpServer := setupHttpServer()
 
 	log.Println("[HttpServer] Starting...")
 	go httpServer.Run()
 	log.Println("[HttpServer] Started")
+}
+
+func setupHttpServer() *server.HttpServer {
+	healthController := controller.NewHealthController(service.NewHealthService())
+	googleAuthController := controller.NewGoogleAuthController(service.NewGoogleAuthService())
+
+	return server.NewHttpServer(
+		healthController,
+		googleAuthController,
+	)
+}
+
+func setupDatabase() {
+	log.Println("[Infrastructure] Connecting to database...")
+	gormDbConnection := db.Init()
+	log.Println("[Infrastructure] Database connected...")
+
+	log.Println("[Infrastructure] Migrating pending models...")
+	db.MigrateModels(gormDbConnection)
+	log.Println("[Infrastructure] Models migrated...")
 }
