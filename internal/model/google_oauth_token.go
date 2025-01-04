@@ -13,6 +13,7 @@ type GoogleOAuthToken struct {
 	TokenType    string    `json:"token_type"`
 	RefreshToken string    `json:"refresh_token"`
 	ExpiresIn    int       `json:"expires_in"`
+	Scope        string    `json:"scope"`
 	CreatedAt    time.Time `json:"created_at"`
 }
 
@@ -35,11 +36,12 @@ func (token *GoogleOAuthToken) AfterFind(tx *gorm.DB) error {
 	return nil
 }
 
-func NewGoogleOAuthToken(accessToken, tokenType, refreshToken string, expiresIn int) *GoogleOAuthToken {
+func NewGoogleOAuthToken(accessToken, tokenType, refreshToken, scope string, expiresIn int) *GoogleOAuthToken {
 	return &GoogleOAuthToken{
 		AccessToken:  accessToken,
 		TokenType:    tokenType,
 		RefreshToken: refreshToken,
 		ExpiresIn:    expiresIn,
+		Scope:        scope,
 	}
 }
