@@ -12,21 +12,22 @@ type GoogleAuthService struct{}
 func (*GoogleAuthService) BuildGoogleAuthURL() string {
 	clientId := common.GetEnv("GOOGLE_CLOUD_CLIENT_ID")
 	redirectUri := common.GetEnv("GOOGLE_CLOUD_REDIRECT_URI")
-	scope := "openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar"
+	state := common.EncryptAES(common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY"))
 	nonce := string(time.Now().UnixNano())
-	state := common.GenerateHMACUsingSHA256(clientId, common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY"))
+	scope := "openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar"
 
-	url := "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&nonce=%s&state=%s"
+	url := "https://accounts.google.com/o/oauth2/v2/auth?accessType=offline&response_type=code&client_id=%s&redirect_uri=%s&state=%s&nonce=%s&scope=%s"
 
-	return fmt.Sprintf(url, clientId, redirectUri, scope, nonce, state)
+	return fmt.Sprintf(url, clientId, redirectUri, state, nonce, scope)
 }
 
 func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) error {
-	clientId := common.GetEnv("GOOGLE_CLOUD_CLIENT_ID")
+	//clientId := common.GetEnv("GOOGLE_CLOUD_CLIENT_ID")
 	//clientSecret := common.GetEnv("GOOGLE_CLOUD_CLIENT_SECRET")
 	//redirectUri := common.GetEnv("GOOGLE_CLOUD_REDIRECT_URI")
 
-	if !common.VerifyHMAC(clientId, common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY"), state) {
+	decryptedState, _ := common.DecryptAES(state)
+	if common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY") != decryptedState {
 		return fmt.Errorf("invalid state")
 	}
 
