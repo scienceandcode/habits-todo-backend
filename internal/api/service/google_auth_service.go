@@ -1,10 +1,18 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
+	"github.com/scienceandcode/habits-todo-backend/internal/model"
+	"github.com/scienceandcode/habits-todo-backend/internal/repository"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
+	"github.com/scienceandcode/habits-todo-backend/pkg/integration"
 )
 
 type GoogleAuthService struct{}
@@ -14,30 +22,134 @@ func (*GoogleAuthService) BuildGoogleAuthURL() string {
 	redirectUri := common.GetEnv("GOOGLE_CLOUD_REDIRECT_URI")
 	state := common.EncryptAES(common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY"))
 	nonce := string(time.Now().UnixNano())
-	scope := "openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar"
+	scope := "openid%20profile%20email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar"
 
-	url := "https://accounts.google.com/o/oauth2/v2/auth?accessType=offline&response_type=code&client_id=%s&redirect_uri=%s&state=%s&nonce=%s&scope=%s"
+	url := "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&response_type=code&client_id=%s&redirect_uri=%s&state=%s&nonce=%s&scope=%s"
 
 	return fmt.Sprintf(url, clientId, redirectUri, state, nonce, scope)
 }
 
 func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) error {
-	//clientId := common.GetEnv("GOOGLE_CLOUD_CLIENT_ID")
-	//clientSecret := common.GetEnv("GOOGLE_CLOUD_CLIENT_SECRET")
-	//redirectUri := common.GetEnv("GOOGLE_CLOUD_REDIRECT_URI")
-
 	decryptedState, _ := common.DecryptAES(state)
 	if common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY") != decryptedState {
 		return fmt.Errorf("invalid state")
 	}
 
-	// TODO: exchange code for token
-	// TODO: handle token exchange error
+	httpClient := &http.Client{}
+	res, err := httpClient.Post("https://oauth2.googleapis.com/token", "application/x-www-form-urlencoded", strings.NewReader(service.buildTokenRequestFormData(code).Encode()))
 
-	// TODO: save token to database instantiating repository
-	// TODO: handle database save error
+	if err != nil || res.StatusCode != http.StatusOK {
+		log.Printf("Error while exchanging code for token: %v", err)
+		return fmt.Errorf("error while exchanging code for token")
+	}
+
+	defer res.Body.Close()
+
+	tokenResponseDTO := integration.NewGoogleOAuthTokenResponseDTO()
+	err = json.NewDecoder(res.Body).Decode(tokenResponseDTO)
+
+	if err != nil {
+		log.Printf("Error while decoding response body: %v", err)
+		return fmt.Errorf("error while decoding token response body")
+	}
+
+	err = service.saveToken(tokenResponseDTO)
+
+	if err != nil {
+		log.Printf("Error while saving token: %v", err)
+		return fmt.Errorf("error while saving token")
+	}
 
 	return nil
+}
+
+func (service *GoogleAuthService) saveToken(tokenResponseDTO *integration.GoogleOAuthTokenResponseDTO) error {
+	userEmail, err := service.getUserEmailFromAccessToken(tokenResponseDTO.AccessToken)
+
+	if err != nil {
+		return fmt.Errorf("error while getting user email: %v", err)
+	}
+
+	tokenRepository := repository.NewBaseRepository[model.GoogleOAuthToken]()
+	token := model.NewGoogleOAuthTokenFromDTO(tokenResponseDTO)
+	token.UserEmail = userEmail
+
+	existingToken, _ := tokenRepository.FindOneBy(map[string]interface{}{"user_email": userEmail})
+
+	if existingToken != nil {
+		token.ID = existingToken.ID
+		tokenRepository.Update(token)
+		return nil
+	}
+
+	tokenRepository.Create(token)
+
+	return nil
+}
+
+func (service *GoogleAuthService) getUserEmailFromAccessToken(accessToken string) (string, error) {
+	httpClient := &http.Client{}
+
+	userInfoUrl, err := service.getUserInfoUrl()
+
+	if err != nil {
+		return "", err
+	}
+
+	req, _ := http.NewRequest("GET", userInfoUrl, nil)
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+
+	res, err := httpClient.Do(req)
+
+	if err != nil || res.StatusCode != http.StatusOK {
+		return "", err
+	}
+
+	defer res.Body.Close()
+
+	userInfoDTO := integration.NewGoogleUserInfoDTO()
+	err = json.NewDecoder(res.Body).Decode(userInfoDTO)
+
+	if err != nil {
+		return "", err
+	}
+
+	return userInfoDTO.Email, nil
+}
+
+func (*GoogleAuthService) getUserInfoUrl() (string, error) {
+	httpClient := &http.Client{}
+	res, err := httpClient.Get("https://accounts.google.com/.well-known/openid-configuration")
+
+	if err != nil || res.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("error while getting openid connect configuration: %v", err)
+	}
+
+	defer res.Body.Close()
+
+	googleOpenIdConnectConfigurationDTO := integration.NewGoogleOpenIdConnectConfigurationDTO()
+	err = json.NewDecoder(res.Body).Decode(googleOpenIdConnectConfigurationDTO)
+
+	if err != nil {
+		return "", fmt.Errorf("error while decoding openid connect config response body: %v", err)
+	}
+
+	return googleOpenIdConnectConfigurationDTO.UserInfoEndpoint, nil
+}
+
+func (*GoogleAuthService) buildTokenRequestFormData(code string) url.Values {
+	clientId := common.GetEnv("GOOGLE_CLOUD_CLIENT_ID")
+	clientSecret := common.GetEnv("GOOGLE_CLOUD_CLIENT_SECRET")
+	redirectUri := common.GetEnv("GOOGLE_CLOUD_REDIRECT_URI")
+
+	data := url.Values{}
+	data.Set("code", code)
+	data.Set("client_id", clientId)
+	data.Set("client_secret", clientSecret)
+	data.Set("redirect_uri", redirectUri)
+	data.Set("grant_type", "authorization_code")
+
+	return data
 }
 
 func NewGoogleAuthService() *GoogleAuthService {
