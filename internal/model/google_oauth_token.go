@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
+	"github.com/scienceandcode/habits-todo-backend/pkg/integration"
 	"gorm.io/gorm"
 )
 
@@ -43,5 +44,15 @@ func NewGoogleOAuthToken(accessToken, tokenType, refreshToken, scope string, exp
 		RefreshToken: refreshToken,
 		ExpiresIn:    expiresIn,
 		Scope:        scope,
+	}
+}
+
+func NewGoogleOAuthTokenFromDTO(dto *integration.GoogleOAuthTokenResponseDTO) *GoogleOAuthToken {
+	return &GoogleOAuthToken{
+		AccessToken:  dto.AccessToken,
+		TokenType:    dto.TokenType,
+		RefreshToken: dto.RefreshToken,
+		ExpiresIn:    dto.ExpiresIn,
+		Scope:        dto.Scope,
 	}
 }
