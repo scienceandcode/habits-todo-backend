@@ -16,6 +16,7 @@ func main() {
 
 	godotenv.Load()
 
+	setupDatabase()
 	startHttpServer()
 
 	common.WaitOsInterruption()
@@ -23,8 +24,6 @@ func main() {
 
 func startHttpServer() {
 	httpServer := setupHttpServer()
-
-	setupDatabase()
 
 	log.Println("[HttpServer] Starting...")
 	go httpServer.Run()
