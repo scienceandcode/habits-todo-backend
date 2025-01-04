@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -28,6 +29,7 @@ func Init() *gorm.DB {
 }
 
 func MigrateModels(db *gorm.DB) {
-	// Todo: create models
-	//db.AutoMigrate()
+	db.AutoMigrate(
+		&model.GoogleOAuthToken{},
+	)
 }
