@@ -15,8 +15,8 @@ type HttpServer struct {
 func (httpServer *HttpServer) registerRoutes(app *gin.Engine) {
 	rootGroup := app.Group("/api")
 
-	route.HealthRoutes(rootGroup)
-	route.GoogleAuthRoutes(rootGroup.Group("/google/auth"))
+	route.HealthRoutes(httpServer.healthController, rootGroup)
+	route.GoogleAuthRoutes(httpServer.googleAuthController, rootGroup.Group("/google/auth"))
 }
 
 func (httpServer *HttpServer) Run() {
