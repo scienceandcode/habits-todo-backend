@@ -33,7 +33,9 @@ Este repositório contém o back-end com todas funcionalidades (API first) do pr
     - AWS lambda (infraestrutura)
   - CockroachDB (postgres)
 - Front-end:
-  - KMM (Kotlin Multiplatform Mobile): Android and IOS 
+  - KMM (Kotlin Multiplatform Mobile): Android and IOS
+ 
+Para maiores informações sobre a estrutura e documentações do projeto, consulte a [Wiki](https://github.com/scienceandcode/habits-todo-backend/wiki).
 
 ## Setup
 
