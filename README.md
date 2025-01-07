@@ -70,9 +70,3 @@ go run cmd/habits-todo-backend/main.go
 ```
 
 A mensagem de log `[GIN-debug] Listening and serving HTTP on :<porta>` deve aparecer e será possível acessar a rota `localhost:<porta>/api/health` para o health check.
-
-## Como contribuir
-...
-
-## Histórico do projeto
-...
