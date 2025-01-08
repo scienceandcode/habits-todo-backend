@@ -18,9 +18,9 @@ func setupTestDB() {
 	db.GetConnection().Exec("DELETE FROM test_entities")
 }
 
-func TestBaseRepository_Create(t *testing.T) {
+func TestRepository_Create(t *testing.T) {
 	setupTestDB()
-	repo := NewBaseRepository[TestEntity]()
+	repo := NewRepository[TestEntity]()
 
 	entity := &TestEntity{Name: "Test Name"}
 	err := repo.Create(entity)
@@ -29,9 +29,9 @@ func TestBaseRepository_Create(t *testing.T) {
 	assert.NotZero(t, entity.ID)
 }
 
-func TestBaseRepository_FindByID(t *testing.T) {
+func TestRepository_FindByID(t *testing.T) {
 	setupTestDB()
-	repo := NewBaseRepository[TestEntity]()
+	repo := NewRepository[TestEntity]()
 
 	entity := &TestEntity{Name: "Test Name"}
 	repo.Create(entity)
@@ -42,9 +42,9 @@ func TestBaseRepository_FindByID(t *testing.T) {
 	assert.Equal(t, entity.Name, result.Name)
 }
 
-func TestBaseRepository_FindAll(t *testing.T) {
+func TestRepository_FindAll(t *testing.T) {
 	setupTestDB()
-	repo := NewBaseRepository[TestEntity]()
+	repo := NewRepository[TestEntity]()
 
 	repo.Create(&TestEntity{Name: "Test 1"})
 	repo.Create(&TestEntity{Name: "Test 2"})
@@ -55,9 +55,9 @@ func TestBaseRepository_FindAll(t *testing.T) {
 	assert.Len(t, results, 2)
 }
 
-func TestBaseRepository_Update(t *testing.T) {
+func TestRepository_Update(t *testing.T) {
 	setupTestDB()
-	repo := NewBaseRepository[TestEntity]()
+	repo := NewRepository[TestEntity]()
 
 	entity := &TestEntity{Name: "Old Name"}
 	repo.Create(entity)
@@ -71,9 +71,9 @@ func TestBaseRepository_Update(t *testing.T) {
 	assert.Equal(t, "New Name", result.Name)
 }
 
-func TestBaseRepository_Delete(t *testing.T) {
+func TestRepository_Delete(t *testing.T) {
 	setupTestDB()
-	repo := NewBaseRepository[TestEntity]()
+	repo := NewRepository[TestEntity]()
 
 	entity := &TestEntity{Name: "Test Name"}
 	repo.Create(entity)
@@ -87,9 +87,9 @@ func TestBaseRepository_Delete(t *testing.T) {
 	assert.Nil(t, result)
 }
 
-func TestBaseRepository_Count(t *testing.T) {
+func TestRepository_Count(t *testing.T) {
 	setupTestDB()
-	repo := NewBaseRepository[TestEntity]()
+	repo := NewRepository[TestEntity]()
 
 	repo.Create(&TestEntity{Name: "Test 1"})
 	repo.Create(&TestEntity{Name: "Test 2"})
@@ -100,9 +100,9 @@ func TestBaseRepository_Count(t *testing.T) {
 	assert.Equal(t, int64(2), count)
 }
 
-func TestBaseRepository_Paginate(t *testing.T) {
+func TestRepository_Paginate(t *testing.T) {
 	setupTestDB()
-	repo := NewBaseRepository[TestEntity]()
+	repo := NewRepository[TestEntity]()
 
 	repo.Create(&TestEntity{Name: "Test 1"})
 	repo.Create(&TestEntity{Name: "Test 2"})

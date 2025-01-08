@@ -70,7 +70,7 @@ func (service *GoogleAuthService) saveToken(tokenResponseDTO *integration.Google
 		return fmt.Errorf("error while getting user email: %v", err)
 	}
 
-	tokenRepository := repository.NewBaseRepository[model.GoogleOAuthToken]()
+	tokenRepository := repository.NewRepository[model.GoogleOAuthToken]()
 	token := model.NewGoogleOAuthTokenFromDTO(tokenResponseDTO)
 	token.UserEmail = userEmail
 

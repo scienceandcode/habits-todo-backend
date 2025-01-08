@@ -1,9 +1,6 @@
 name: Deploy staging
 
-on:
-  push:
-    branches:
-      - staging
+on: workflow_dispatch
 
 permissions:
   contents: read
