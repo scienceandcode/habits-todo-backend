@@ -5,8 +5,6 @@ import (
 	"github.com/scienceandcode/habits-todo-backend/internal/api/controller"
 )
 
-func HealthRoutes(group *gin.RouterGroup) {
-	controller := &controller.HealthController{}
-
+func HealthRoutes(controller *controller.HealthController, group *gin.RouterGroup) {
 	group.GET("/health", controller.GetHealth)
 }
