@@ -33,10 +33,12 @@ func startHttpServer() {
 func setupHttpServer() *server.HttpServer {
 	healthController := controller.NewHealthController(service.NewHealthService())
 	googleAuthController := controller.NewGoogleAuthController(service.NewGoogleAuthService())
+	userAuthController := controller.NewUserAuthController(service.NewUserAuthService())
 
 	return server.NewHttpServer(
 		healthController,
 		googleAuthController,
+		userAuthController,
 	)
 }
 
