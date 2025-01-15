@@ -3,12 +3,12 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/scienceandcode/habits-todo-backend/internal/api/errors"
 	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/internal/repository"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
@@ -29,18 +29,17 @@ func (*GoogleAuthService) BuildGoogleAuthURL() string {
 	return fmt.Sprintf(url, clientId, redirectUri, state, nonce, scope)
 }
 
-func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) error {
+func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *errors.Error {
 	decryptedState, _ := common.DecryptAES(state)
 	if common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY") != decryptedState {
-		return fmt.Errorf("invalid state")
+		return errors.NewError("Error while exchanging code for token", []*errors.FieldError{errors.NewFieldError("state", "Invalid state")})
 	}
 
 	httpClient := &http.Client{}
 	res, err := httpClient.Post("https://oauth2.googleapis.com/token", "application/x-www-form-urlencoded", strings.NewReader(service.buildTokenRequestFormData(code).Encode()))
 
 	if err != nil || res.StatusCode != http.StatusOK {
-		log.Printf("Error while exchanging code for token: %v", err)
-		return fmt.Errorf("error while exchanging code for token")
+		return errors.NewError("Error while exchanging code for token", []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed")})
 	}
 
 	defer res.Body.Close()
@@ -49,15 +48,13 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) error
 	err = json.NewDecoder(res.Body).Decode(tokenResponseDTO)
 
 	if err != nil {
-		log.Printf("Error while decoding response body: %v", err)
-		return fmt.Errorf("error while decoding token response body")
+		return errors.NewError("Error while exchanging code for token", []*errors.FieldError{errors.NewFieldError("response", "Invalid auth response body")})
 	}
 
 	err = service.saveToken(tokenResponseDTO)
 
 	if err != nil {
-		log.Printf("Error while saving token: %v", err)
-		return fmt.Errorf("error while saving token")
+		return errors.NewError("Error while exchanging code for token", []*errors.FieldError{errors.NewFieldError("token", "Error while saving token")})
 	}
 
 	return nil
