@@ -48,5 +48,6 @@ func Init() *gorm.DB {
 func MigrateModels(db *gorm.DB) {
 	db.AutoMigrate(
 		&model.GoogleOAuthToken{},
+		&model.User{},
 	)
 }

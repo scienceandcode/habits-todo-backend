@@ -10,6 +10,7 @@ import (
 	"encoding/hex"
 	"io"
 	"log"
+	"net/mail"
 	"os"
 	"os/signal"
 	"sync"
@@ -103,4 +104,9 @@ func DecryptAES(cipherText string) (string, error) {
 	stream.XORKeyStream(cipherTextBytes, cipherTextBytes)
 
 	return string(cipherTextBytes), nil
+}
+
+func ValidateEmail(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
 }
