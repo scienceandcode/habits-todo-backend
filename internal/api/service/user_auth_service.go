@@ -2,7 +2,6 @@ package service
 
 import (
 	"log"
-
 	"github.com/scienceandcode/habits-todo-backend/internal/api/dto"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/errors"
 	"github.com/scienceandcode/habits-todo-backend/internal/model"
@@ -33,19 +32,24 @@ func (service *UserAuthService) Register(dto *dto.CreateUserRequestDTO) (*dto.Us
 	return user.ToUserDTO(), nil
 }
 
-func (service *UserAuthService) Login(dto *dto.LoginRequestDTO) (*dto.UserDTO, *errors.Error) {
+func (service *UserAuthService) Login(dto *dto.LoginRequestDTO) (string, *errors.Error) {
 	if errorsList := service.validateLoginRequestDTO(dto); errorsList != nil {
-		return nil, errors.NewError("Invalid login request.", errorsList)
+		return "", errors.NewError("Invalid login request.", errorsList)
 	}
 
 	userRepository := repository.NewRepository[model.User]()
 	user, _ := userRepository.FindOneBy(map[string]interface{}{"email": dto.Email})
 
 	if credErr := service.validateUserCredentials(user, dto.Password); credErr != nil {
-		return nil, errors.NewError("Invalid credentials.", []*errors.FieldError{credErr})
+		return "", errors.NewError("Invalid credentials.", []*errors.FieldError{credErr})
 	}
 
-	return user.ToUserDTO(), nil
+	token, err := common.GenerateJWT(int(user.ID))
+	if err != nil {
+		return "", errors.NewError("Error generating token.", nil)
+	}
+
+	return token, nil
 }
 
 func (service *UserAuthService) validateCreateUserRequestDTO(dto *dto.CreateUserRequestDTO) []*errors.FieldError {

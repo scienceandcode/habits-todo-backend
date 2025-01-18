@@ -31,14 +31,14 @@ func (controller *UserAuthController) Login(c *gin.Context) {
 	var loginRequestDTO *dto.LoginRequestDTO
 	api.ParseRequest(c, &loginRequestDTO)
 
-	user, err := controller.service.Login(loginRequestDTO)
+	token, err := controller.service.Login(loginRequestDTO)
 
 	if err != nil {
 		api.ResponseUnauthorized(c, err)
 		return
 	}
 
-	api.ResponseSuccess(c, http.StatusOK, user)
+	api.ResponseSuccess(c, http.StatusOK, gin.H{"token": token})
 }
 
 func NewUserAuthController(service *service.UserAuthService) *UserAuthController {
