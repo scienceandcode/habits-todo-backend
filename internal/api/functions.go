@@ -25,3 +25,7 @@ func ResponseSuccess(c *gin.Context, httpStatusCode int, data any) {
 func ResponseUnauthorized(c *gin.Context, err *errors.Error) {
 	c.JSON(http.StatusUnauthorized, gin.H{"error": err})
 }
+
+func ResponseNotFound(c *gin.Context, err *errors.Error) {
+	c.JSON(http.StatusNotFound, gin.H{"error": err})
+}
