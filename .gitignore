@@ -2,4 +2,3 @@ __debug_*
 
 .env
 .docker/data/
-vendor/
