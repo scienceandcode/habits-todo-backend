@@ -38,7 +38,7 @@ func (controller *UserAuthController) Login(c *gin.Context) {
 		return
 	}
 
-	api.ResponseSuccess(c, http.StatusOK, gin.H{"token": token})
+	api.ResponseSuccess(c, http.StatusOK, token)
 }
 
 func NewUserAuthController(service *service.UserAuthService) *UserAuthController {
