@@ -22,7 +22,7 @@ func ResponseSuccess(c *gin.Context, httpStatusCode int, data any) {
 	c.JSON(httpStatusCode, data)
 }
 
-func ResponseUnauthorized(c *gin.Context, err *errors.Error) {
+func ResponseUnauthorized(c *gin.Context, err error) {
 	c.JSON(http.StatusUnauthorized, gin.H{"error": err})
 }
 
