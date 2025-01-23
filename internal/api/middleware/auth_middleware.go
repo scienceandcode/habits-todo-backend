@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
@@ -17,14 +16,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-		if tokenString == authHeader {
-			c.JSON(http.StatusUnauthorized, "Bearer token is required")
-			c.Abort()
-			return
-		}
-
-		userID, err := common.ValidateJWT(tokenString)
+		userID, err := common.ValidateJWT(authHeader)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, "Invalid or expired token")
 			c.Abort()
