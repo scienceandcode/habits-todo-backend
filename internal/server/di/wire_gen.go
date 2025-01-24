@@ -9,6 +9,8 @@ package di
 import (
 	"github.com/scienceandcode/habits-todo-backend/internal/api/controller"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
+	"github.com/scienceandcode/habits-todo-backend/internal/db"
+	"github.com/scienceandcode/habits-todo-backend/internal/repository"
 	"github.com/scienceandcode/habits-todo-backend/internal/server"
 )
 
@@ -21,7 +23,9 @@ func InitializeHttpServer() *server.HttpServer {
 	googleAuthController := controller.NewGoogleAuthController(googleAuthService)
 	userAuthService := service.NewUserAuthService()
 	userAuthController := controller.NewUserAuthController(userAuthService)
-	userService := service.NewUserService()
+	gormDB := db.GetConnection()
+	userRepository := repository.NewUserRepository(gormDB)
+	userService := service.NewUserService(userRepository)
 	userController := controller.NewUserController(userService)
 	httpServer := server.NewHttpServer(healthController, googleAuthController, userAuthController, userController)
 	return httpServer

@@ -4,13 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/dto"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/errors"
-	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/internal/repository"
 )
 
-type UserService struct{}
+type UserService struct {
+	UserRepo *repository.UserRepository
+}
 
-func (service *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error) {
+func (s *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error) {
 	userID, exists := c.Get("user_id")
 	if !exists {
 		return nil, errors.NewError("User ID not found in context", nil)
@@ -21,8 +22,7 @@ func (service *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error
 		return nil, errors.NewError("Invalid user ID type in context", nil)
 	}
 
-	userRepository := repository.NewRepository[model.User]()
-	user, err := userRepository.FindByID(id)
+	user, err := s.UserRepo.FindByID(id)
 	if err != nil || user == nil {
 		return nil, errors.NewError("User not found", nil)
 	}
@@ -30,6 +30,6 @@ func (service *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error
 	return user.ToUserDTO(), nil
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+func NewUserService(userRepo *repository.UserRepository) *UserService {
+	return &UserService{UserRepo: userRepo}
 }
