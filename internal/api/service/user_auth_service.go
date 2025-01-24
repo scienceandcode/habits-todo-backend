@@ -11,7 +11,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserAuthService struct{}
+type UserAuthService struct {
+	UserRepo *repository.UserRepository
+}
 
 func (service *UserAuthService) Register(dto *dto.CreateUserRequestDTO) (*dto.UserDTO, *errors.Error) {
 	errorsList := service.validateCreateUserRequestDTO(dto)
@@ -20,10 +22,8 @@ func (service *UserAuthService) Register(dto *dto.CreateUserRequestDTO) (*dto.Us
 		return nil, errors.NewError("User registration failed.", errorsList)
 	}
 
-	userRepository := repository.NewRepository[model.User]()
 	user := model.NewUserFromCreateUserRequestDTO(dto)
-
-	repoErr := userRepository.Create(user)
+	repoErr := service.UserRepo.Create(user)
 
 	if repoErr != nil {
 		log.Printf("Failed to create user: %v", repoErr.Error())
@@ -38,8 +38,7 @@ func (service *UserAuthService) Login(loginRequestDTO *dto.LoginRequestDTO) (*dt
 		return nil, errors.NewError("Invalid login request.", errorsList)
 	}
 
-	userRepository := repository.NewRepository[model.User]()
-	user, _ := userRepository.FindOneBy(map[string]interface{}{"email": loginRequestDTO.Email})
+	user, _ := service.UserRepo.FindOneBy(map[string]interface{}{"email": loginRequestDTO.Email})
 
 	if credErr := service.validateUserCredentials(user, loginRequestDTO.Password); credErr != nil {
 		return nil, errors.NewError("Invalid credentials.", []*errors.FieldError{credErr})
@@ -117,8 +116,7 @@ func (service *UserAuthService) validateUserEmail(email string) *errors.FieldErr
 		return errors.NewFieldError("email", "Please provide a valid email address.")
 	}
 
-	userRepository := repository.NewRepository[model.User]()
-	user, _ := userRepository.FindOneBy(map[string]interface{}{"email": email})
+	user, _ := service.UserRepo.FindOneBy(map[string]interface{}{"email": email})
 
 	if user != nil {
 		return errors.NewFieldError("email", "Email address is already in use.")
@@ -127,6 +125,6 @@ func (service *UserAuthService) validateUserEmail(email string) *errors.FieldErr
 	return nil
 }
 
-func NewUserAuthService() *UserAuthService {
-	return &UserAuthService{}
+func NewUserAuthService(userRepo *repository.UserRepository) *UserAuthService {
+	return &UserAuthService{UserRepo: userRepo}
 }
