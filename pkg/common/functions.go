@@ -8,7 +8,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
-	"errors"
 	"io"
 	"log"
 	"net/mail"
@@ -19,6 +18,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/scienceandcode/habits-todo-backend/internal/api/errors"
 )
 
 func GetEnv(env string) string {
@@ -129,7 +129,7 @@ func ValidateJWT(tokenString string) (int, error) {
 	secret := GetEnv("JWT_SECRET_KEY")
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
+			return nil, errors.NewSimpleError("unexpected signing method")
 		}
 		return []byte(secret), nil
 	})
@@ -143,5 +143,5 @@ func ValidateJWT(tokenString string) (int, error) {
 		return userID, nil
 	}
 
-	return 0, errors.New("invalid token")
+	return 0, errors.NewSimpleError("invalid token")
 }
