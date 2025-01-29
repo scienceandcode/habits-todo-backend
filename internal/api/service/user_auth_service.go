@@ -45,7 +45,9 @@ func (service *UserAuthService) Login(loginRequestDTO *dto.LoginRequestDTO) (*dt
 		return nil, errors.NewError("Invalid credentials.", []*errors.FieldError{credErr})
 	}
 
-	token, err := common.GenerateJWT(int(user.ID))
+	jwtService := NewJWTService(common.GetEnv("JWT_SECRET_KEY"))
+	token, err := jwtService.GenerateJWT(int(user.ID))
+
 	if err != nil {
 		return nil, errors.NewError("Error generating token.", nil)
 	}

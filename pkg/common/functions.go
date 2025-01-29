@@ -15,10 +15,6 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
-	"time"
-
-	"github.com/golang-jwt/jwt"
-	"github.com/scienceandcode/habits-todo-backend/internal/api/errors"
 )
 
 func GetEnv(env string) string {
@@ -113,35 +109,4 @@ func DecryptAES(cipherText string) (string, error) {
 func ValidateEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
-}
-
-func GenerateJWT(userID int) (string, error) {
-	secret := GetEnv("JWT_SECRET_KEY")
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": userID,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(),
-	})
-
-	return token.SignedString([]byte(secret))
-}
-
-func ValidateJWT(tokenString string) (int, error) {
-	secret := GetEnv("JWT_SECRET_KEY")
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.NewSimpleError("unexpected signing method")
-		}
-		return []byte(secret), nil
-	})
-
-	if err != nil {
-		return 0, err
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		userID := int(claims["user_id"].(float64))
-		return userID, nil
-	}
-
-	return 0, errors.NewSimpleError("invalid token")
 }
