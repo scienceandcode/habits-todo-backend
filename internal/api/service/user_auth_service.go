@@ -50,9 +50,7 @@ func (service *UserAuthService) Login(loginRequestDTO *dto.LoginRequestDTO) (*dt
 		return nil, errors.NewError("Error generating token.", nil)
 	}
 
-	response := &dto.TokenResponseDTO{
-		Token: token,
-	}
+	response := dto.NewTokenResponseDTO(token)
 
 	return response, nil
 }
