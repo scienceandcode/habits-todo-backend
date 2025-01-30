@@ -8,7 +8,7 @@ import (
 )
 
 type UserService struct {
-	UserRepo *repository.UserRepository
+	UserRepo repository.UserRepository
 }
 
 func (s *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error) {
@@ -30,6 +30,6 @@ func (s *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error) {
 	return user.ToUserDTO(), nil
 }
 
-func NewUserService(userRepo *repository.UserRepository) *UserService {
+func NewUserService(userRepo repository.UserRepository) *UserService {
 	return &UserService{UserRepo: userRepo}
 }

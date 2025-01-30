@@ -9,9 +9,9 @@ package di
 import (
 	"github.com/scienceandcode/habits-todo-backend/internal/api/controller"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
-	"github.com/scienceandcode/habits-todo-backend/internal/api/service/di"
+	di2 "github.com/scienceandcode/habits-todo-backend/internal/api/service/di"
 	"github.com/scienceandcode/habits-todo-backend/internal/db"
-	"github.com/scienceandcode/habits-todo-backend/internal/repository"
+	"github.com/scienceandcode/habits-todo-backend/internal/repository/di"
 	"github.com/scienceandcode/habits-todo-backend/internal/server"
 )
 
@@ -23,8 +23,8 @@ func InitializeHttpServer() *server.HttpServer {
 	googleAuthService := service.NewGoogleAuthService()
 	googleAuthController := controller.NewGoogleAuthController(googleAuthService)
 	gormDB := db.GetConnection()
-	userRepository := repository.NewUserRepository(gormDB)
-	jwtService := di.ProvideJWTService()
+	userRepository := di.ProvideUserRepository(gormDB)
+	jwtService := di2.ProvideJWTService()
 	userAuthService := service.NewUserAuthService(userRepository, jwtService)
 	userAuthController := controller.NewUserAuthController(userAuthService)
 	userService := service.NewUserService(userRepository)
