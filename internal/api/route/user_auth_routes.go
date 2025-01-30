@@ -7,4 +7,5 @@ import (
 
 func UserAuthRoutes(controller *controller.UserAuthController, group *gin.RouterGroup) {
 	group.POST("/register", controller.Register)
+	group.POST("/login", controller.Login)
 }

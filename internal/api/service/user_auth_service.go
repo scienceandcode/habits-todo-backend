@@ -8,6 +8,7 @@ import (
 	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/internal/repository"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserAuthService struct{}
@@ -32,6 +33,30 @@ func (service *UserAuthService) Register(dto *dto.CreateUserRequestDTO) (*dto.Us
 	return user.ToUserDTO(), nil
 }
 
+func (service *UserAuthService) Login(loginRequestDTO *dto.LoginRequestDTO) (*dto.TokenResponseDTO, *errors.Error) {
+	if errorsList := service.validateLoginRequestDTO(loginRequestDTO); errorsList != nil {
+		return nil, errors.NewError("Invalid login request.", errorsList)
+	}
+
+	userRepository := repository.NewRepository[model.User]()
+	user, _ := userRepository.FindOneBy(map[string]interface{}{"email": loginRequestDTO.Email})
+
+	if credErr := service.validateUserCredentials(user, loginRequestDTO.Password); credErr != nil {
+		return nil, errors.NewError("Invalid credentials.", []*errors.FieldError{credErr})
+	}
+
+	jwtService := NewJWTService(common.GetEnv("JWT_SECRET_KEY"))
+	token, err := jwtService.GenerateJWT(int(user.ID))
+
+	if err != nil {
+		return nil, errors.NewError("Error generating token.", nil)
+	}
+
+	response := dto.NewTokenResponseDTO(token)
+
+	return response, nil
+}
+
 func (service *UserAuthService) validateCreateUserRequestDTO(dto *dto.CreateUserRequestDTO) []*errors.FieldError {
 	var errorsList []*errors.FieldError
 
@@ -50,6 +75,38 @@ func (service *UserAuthService) validateCreateUserRequestDTO(dto *dto.CreateUser
 
 	if len(errorsList) > 0 {
 		return errorsList
+	}
+
+	return nil
+}
+
+func (service *UserAuthService) validateLoginRequestDTO(dto *dto.LoginRequestDTO) []*errors.FieldError {
+	var errorsList []*errors.FieldError
+
+	if dto.Email == "" {
+		errorsList = append(errorsList, errors.NewFieldError("email", "Email is required."))
+	} else if !common.ValidateEmail(dto.Email) {
+		errorsList = append(errorsList, errors.NewFieldError("email", "Please provide a valid email address."))
+	}
+
+	if dto.Password == "" {
+		errorsList = append(errorsList, errors.NewFieldError("password", "Password is required."))
+	}
+
+	if len(errorsList) > 0 {
+		return errorsList
+	}
+
+	return nil
+}
+
+func (service *UserAuthService) validateUserCredentials(user *model.User, password string) *errors.FieldError {
+	if user == nil {
+		return errors.NewFieldError("email", "Email not found.")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return errors.NewFieldError("password", "Incorrect password.")
 	}
 
 	return nil
