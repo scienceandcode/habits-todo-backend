@@ -46,7 +46,7 @@ func (service *UserAuthService) Login(loginRequestDTO *dto.LoginRequestDTO) (*dt
 	}
 
 	jwtService := NewJWTService(common.GetEnv("JWT_SECRET_KEY"))
-	token, err := jwtService.GenerateJWT(int(user.ID))
+	token, err := jwtService.GenerateJWT(user.ID)
 
 	if err != nil {
 		return nil, errors.NewError("Error generating token.", nil)
