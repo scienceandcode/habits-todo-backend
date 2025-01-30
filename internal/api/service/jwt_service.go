@@ -11,7 +11,7 @@ type JWTService struct {
 	SecretKey string
 }
 
-func (j *JWTService) GenerateJWT(userID int) (string, error) {
+func (j *JWTService) GenerateJWT(userID uint) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
@@ -20,7 +20,7 @@ func (j *JWTService) GenerateJWT(userID int) (string, error) {
 	return token.SignedString([]byte(j.SecretKey))
 }
 
-func (j *JWTService) ValidateJWT(tokenString string) (int, error) {
+func (j *JWTService) ValidateJWT(tokenString string) (uint, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
@@ -37,7 +37,7 @@ func (j *JWTService) ValidateJWT(tokenString string) (int, error) {
 		if !ok {
 			return 0, errors.New("invalid user_id in token")
 		}
-		return int(userID), nil
+		return uint(userID), nil
 	}
 
 	return 0, errors.New("invalid token")
