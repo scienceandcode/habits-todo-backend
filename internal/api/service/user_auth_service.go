@@ -12,7 +12,8 @@ import (
 )
 
 type UserAuthService struct {
-	UserRepo *repository.UserRepository
+	UserRepo   *repository.UserRepository
+	JwtService *JWTService
 }
 
 func (service *UserAuthService) Register(dto *dto.CreateUserRequestDTO) (*dto.UserDTO, *errors.Error) {
@@ -44,9 +45,7 @@ func (service *UserAuthService) Login(loginRequestDTO *dto.LoginRequestDTO) (*dt
 		return nil, errors.NewError("Invalid credentials.", []*errors.FieldError{credErr})
 	}
 
-	jwtService := NewJWTService(common.GetEnv("JWT_SECRET_KEY"))
-	token, err := jwtService.GenerateJWT(user.ID)
-
+	token, err := service.JwtService.GenerateJWT(user.ID)
 	if err != nil {
 		return nil, errors.NewError("Error generating token.", nil)
 	}
@@ -125,6 +124,6 @@ func (service *UserAuthService) validateUserEmail(email string) *errors.FieldErr
 	return nil
 }
 
-func NewUserAuthService(userRepo *repository.UserRepository) *UserAuthService {
-	return &UserAuthService{UserRepo: userRepo}
+func NewUserAuthService(userRepo *repository.UserRepository, jwtService *JWTService) *UserAuthService {
+	return &UserAuthService{UserRepo: userRepo, JwtService: jwtService}
 }
