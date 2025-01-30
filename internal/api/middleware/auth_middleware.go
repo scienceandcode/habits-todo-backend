@@ -5,6 +5,7 @@ import (
 
 	"github.com/scienceandcode/habits-todo-backend/internal/api"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/errors"
+	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 )
 
@@ -17,7 +18,9 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userID, err := common.ValidateJWT(authHeader)
+		jwtService := service.NewJWTService(common.GetEnv("JWT_SECRET_KEY"))
+
+		userID, err := jwtService.ValidateJWT(authHeader)
 		if err != nil {
 			api.ResponseUnauthorized(c, errors.NewSimpleError("Invalid or expired token"))
 			c.Abort()

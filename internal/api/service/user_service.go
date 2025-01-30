@@ -17,7 +17,7 @@ func (s *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error) {
 		return nil, errors.NewError("User ID not found in context", nil)
 	}
 
-	id, ok := userID.(int)
+	id, ok := userID.(uint)
 	if !ok {
 		return nil, errors.NewError("Invalid user ID type in context", nil)
 	}
