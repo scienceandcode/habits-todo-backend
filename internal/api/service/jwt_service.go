@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -13,7 +14,7 @@ type JWTService struct {
 
 func (j *JWTService) GenerateJWT(userID uint) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": userID,
+		"user_id": strconv.FormatUint(uint64(userID), 10),
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	})
 
@@ -33,11 +34,13 @@ func (j *JWTService) ValidateJWT(tokenString string) (uint, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		userID, ok := claims["user_id"].(float64)
+		userID, ok := claims["user_id"]
 		if !ok {
 			return 0, errors.New("invalid user_id in token")
 		}
-		return uint(userID), nil
+
+		parsedUserID, _ := strconv.ParseUint(userID.(string), 10, 64)
+		return uint(parsedUserID), nil
 	}
 
 	return 0, errors.New("invalid token")
