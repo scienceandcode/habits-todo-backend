@@ -5,24 +5,24 @@ import (
 	"gorm.io/gorm"
 )
 
-type userRepository struct {
+type UserRepositoryImpl struct {
 	*Repository[model.User]
 }
 
-func (r *userRepository) FindByID(id uint) (*model.User, error) {
+func (r *UserRepositoryImpl) FindByID(id uint) (*model.User, error) {
 	return r.Repository.FindByID(id)
 }
 
-func (r *userRepository) Create(user *model.User) error {
+func (r *UserRepositoryImpl) Create(user *model.User) error {
 	return r.Repository.Create(user)
 }
 
-func (r *userRepository) FindOneBy(condition map[string]interface{}) (*model.User, error) {
+func (r *UserRepositoryImpl) FindOneBy(condition map[string]interface{}) (*model.User, error) {
 	return r.Repository.FindOneBy(condition)
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {
-	return &userRepository{
+	return &UserRepositoryImpl{
 		Repository: &Repository[model.User]{DB: db},
 	}
 }

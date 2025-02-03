@@ -24,7 +24,7 @@ func InitializeHttpServer() *server.HttpServer {
 		service.NewGoogleAuthService,
 		service.NewUserAuthService,
 		service.NewUserService,
-		repositoryDI.ProvideUserRepository,
+		repositoryDI.UserRepositorySet,
 		serviceDI.ProvideJWTService,
 		db.GetConnection,
 	)
