@@ -12,7 +12,7 @@ import (
 )
 
 type UserAuthService struct {
-	UserRepo   repository.UserRepository
+	UserRepo   *repository.UserRepository
 	JwtService *JWTService
 }
 
@@ -124,6 +124,6 @@ func (service *UserAuthService) validateUserEmail(email string) *errors.FieldErr
 	return nil
 }
 
-func NewUserAuthService(userRepo repository.UserRepository, jwtService *JWTService) *UserAuthService {
+func NewUserAuthService(userRepo *repository.UserRepository, jwtService *JWTService) *UserAuthService {
 	return &UserAuthService{UserRepo: userRepo, JwtService: jwtService}
 }

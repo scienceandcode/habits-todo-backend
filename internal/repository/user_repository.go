@@ -2,10 +2,15 @@ package repository
 
 import (
 	"github.com/scienceandcode/habits-todo-backend/internal/model"
+	"gorm.io/gorm"
 )
 
-type UserRepository interface {
-	FindByID(id uint) (*model.User, error)
-	Create(user *model.User) error
-	FindOneBy(condition map[string]interface{}) (*model.User, error)
+type UserRepository struct {
+	*Repository[model.User]
+}
+
+func NewUserRepository(db *gorm.DB) *UserRepository {
+	return &UserRepository{
+		Repository: &Repository[model.User]{DB: db},
+	}
 }
