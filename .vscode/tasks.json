@@ -5,6 +5,11 @@
             "label": "run",
             "type": "shell",
             "command": "go run ${workspaceFolder}/cmd/habits-todo-backend/main.go"
+        },
+        {
+            "label": "wire",
+            "type": "shell",
+            "command": "wire ${relativeFile}"
         }
     ]
 }
