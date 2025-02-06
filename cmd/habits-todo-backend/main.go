@@ -5,7 +5,6 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/scienceandcode/habits-todo-backend/internal/db"
-	"github.com/scienceandcode/habits-todo-backend/internal/server"
 	"github.com/scienceandcode/habits-todo-backend/internal/server/di"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 )
@@ -22,15 +21,11 @@ func main() {
 }
 
 func startHttpServer() {
-	httpServer := setupHttpServer()
+	httpServer := di.InitializeHttpServer()
 
 	log.Println("[HttpServer] Starting...")
 	go httpServer.Run()
 	log.Println("[HttpServer] Started")
-}
-
-func setupHttpServer() *server.HttpServer {
-	return di.InitializeHttpServer()
 }
 
 func setupDatabase() {
