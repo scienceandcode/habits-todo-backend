@@ -114,3 +114,19 @@ func TestRepository_Paginate(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, results, 2)
 }
+
+func TestRepository_FindOneBy(t *testing.T) {
+	setupTestDB()
+	repo := NewRepository[TestEntity]()
+
+	entity := &TestEntity{Name: "Test Name"}
+	secondEntity := &TestEntity{Name: "Second Test Name"}
+	repo.Create(entity)
+	repo.Create(secondEntity)
+
+	result, err := repo.FindOneBy(map[string]interface{}{"name": "Second Test Name"})
+
+	assert.NoError(t, err)
+	assert.Equal(t, uint(2), result.ID)
+	assert.Equal(t, secondEntity.Name, result.Name)
+}
