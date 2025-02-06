@@ -7,7 +7,6 @@ import (
 	"github.com/google/wire"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/controller"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
-	"github.com/scienceandcode/habits-todo-backend/internal/api/service/di"
 	"github.com/scienceandcode/habits-todo-backend/internal/db"
 	"github.com/scienceandcode/habits-todo-backend/internal/repository"
 	"github.com/scienceandcode/habits-todo-backend/internal/server"
@@ -25,7 +24,7 @@ func InitializeHttpServer() *server.HttpServer {
 		service.NewUserAuthService,
 		service.NewUserService,
 		repository.NewUserRepository,
-		di.ProvideJWTService,
+		service.NewJWTService,
 		db.GetConnection,
 	)
 	return &server.HttpServer{}
