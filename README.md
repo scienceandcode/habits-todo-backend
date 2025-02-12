@@ -1,4 +1,4 @@
-<p align="center"><img src="https://github.com/Matheus-Lara/science-and-code/assets/63257275/d84b82bc-7597-434f-840c-6d2507e8b85d"></img></p>
+<p align="center"><img src="https://github.com/user-attachments/assets/73eb58e4-5270-4c00-a262-0dab049cfc48"></img></p>
 
 <h1 align="center">HabitsTodo - Backend</h1>
 
