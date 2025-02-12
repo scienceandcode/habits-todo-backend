@@ -4,10 +4,8 @@ import (
 	"log"
 
 	"github.com/joho/godotenv"
-	"github.com/scienceandcode/habits-todo-backend/internal/api/controller"
-	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
 	"github.com/scienceandcode/habits-todo-backend/internal/db"
-	"github.com/scienceandcode/habits-todo-backend/internal/server"
+	"github.com/scienceandcode/habits-todo-backend/internal/server/di"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 )
 
@@ -23,25 +21,11 @@ func main() {
 }
 
 func startHttpServer() {
-	httpServer := setupHttpServer()
+	httpServer := di.InitializeHttpServer()
 
 	log.Println("[HttpServer] Starting...")
 	go httpServer.Run()
 	log.Println("[HttpServer] Started")
-}
-
-func setupHttpServer() *server.HttpServer {
-	healthController := controller.NewHealthController(service.NewHealthService())
-	googleAuthController := controller.NewGoogleAuthController(service.NewGoogleAuthService())
-	userAuthController := controller.NewUserAuthController(service.NewUserAuthService())
-	userController := controller.NewUserController(service.NewUserService())
-
-	return server.NewHttpServer(
-		healthController,
-		googleAuthController,
-		userAuthController,
-		userController,
-	)
 }
 
 func setupDatabase() {
