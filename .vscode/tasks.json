@@ -9,7 +9,7 @@
         {
             "label": "wire",
             "type": "shell",
-            "command": "wire ${relativeFile}"
+            "command": "wire ${workspaceFolder}/internal/server/di/wire.go"
         }
     ]
 }
