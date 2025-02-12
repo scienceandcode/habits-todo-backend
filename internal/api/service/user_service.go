@@ -11,7 +11,7 @@ type UserService struct {
 	UserRepo *repository.UserRepository
 }
 
-func (s *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error) {
+func (service *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error) {
 	userID, exists := c.Get("user_id")
 	if !exists {
 		return nil, errors.NewError("User ID not found in context", nil)
@@ -22,7 +22,7 @@ func (s *UserService) Profile(c *gin.Context) (*dto.UserDTO, *errors.Error) {
 		return nil, errors.NewError("Invalid user ID type in context", nil)
 	}
 
-	user, err := s.UserRepo.FindByID(id)
+	user, err := service.UserRepo.FindByID(id)
 	if err != nil || user == nil {
 		return nil, errors.NewError("User not found", nil)
 	}
