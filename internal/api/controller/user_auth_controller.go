@@ -27,6 +27,20 @@ func (controller *UserAuthController) Register(c *gin.Context) {
 	api.ResponseSuccess(c, http.StatusCreated, user)
 }
 
+func (controller *UserAuthController) Login(c *gin.Context) {
+	var loginRequestDTO *dto.LoginRequestDTO
+	api.ParseRequest(c, &loginRequestDTO)
+
+	token, err := controller.service.Login(loginRequestDTO)
+
+	if err != nil {
+		api.ResponseUnauthorized(c, err)
+		return
+	}
+
+	api.ResponseSuccess(c, http.StatusOK, token)
+}
+
 func NewUserAuthController(service *service.UserAuthService) *UserAuthController {
 	return &UserAuthController{
 		service: service,
