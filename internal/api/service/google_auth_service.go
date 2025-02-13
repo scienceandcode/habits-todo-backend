@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/scienceandcode/habits-todo-backend/internal/api/errors"
-	"github.com/scienceandcode/habits-todo-backend/internal/api/logger"
 	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/internal/repository"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
@@ -65,9 +64,7 @@ func (service *GoogleAuthService) saveToken(tokenResponseDTO *integration.Google
 	userEmail, err := service.getUserEmailFromAccessToken(tokenResponseDTO.AccessToken)
 
 	if err != nil {
-		formattedError := fmt.Errorf("error while getting user email: %v", err)
-		logger.Error(formattedError.Error())
-		return formattedError
+		return fmt.Errorf("error while getting user email: %v", err)
 	}
 
 	tokenRepository := repository.NewRepository[model.GoogleOAuthToken]()
@@ -93,9 +90,7 @@ func (service *GoogleAuthService) getUserEmailFromAccessToken(accessToken string
 	userInfoUrl, err := service.getUserInfoUrl()
 
 	if err != nil {
-		formattedError := fmt.Errorf("error while getting user info url: %v", err)
-		logger.Error(formattedError.Error())
-		return "", formattedError
+		return "", err
 	}
 
 	req, _ := http.NewRequest("GET", userInfoUrl, nil)
@@ -104,9 +99,7 @@ func (service *GoogleAuthService) getUserEmailFromAccessToken(accessToken string
 	res, err := httpClient.Do(req)
 
 	if err != nil || res.StatusCode != http.StatusOK {
-		formattedError := fmt.Errorf("error while getting user info: %v", err)
-		logger.Error(formattedError.Error())
-		return "", formattedError
+		return "", err
 	}
 
 	defer res.Body.Close()
@@ -115,9 +108,7 @@ func (service *GoogleAuthService) getUserEmailFromAccessToken(accessToken string
 	err = json.NewDecoder(res.Body).Decode(userInfoDTO)
 
 	if err != nil {
-		formattedError := fmt.Errorf("error while decoding user info response body: %v", err)
-		logger.Error(formattedError.Error())
-		return "", formattedError
+		return "", err
 	}
 
 	return userInfoDTO.Email, nil
@@ -128,9 +119,7 @@ func (*GoogleAuthService) getUserInfoUrl() (string, error) {
 	res, err := httpClient.Get("https://accounts.google.com/.well-known/openid-configuration")
 
 	if err != nil || res.StatusCode != http.StatusOK {
-		formattedError := fmt.Errorf("error while getting openid connect configuration: %v", err)
-		logger.Error(formattedError.Error())
-		return "", formattedError
+		return "", fmt.Errorf("error while getting openid connect configuration: %v", err)
 	}
 
 	defer res.Body.Close()
@@ -139,9 +128,7 @@ func (*GoogleAuthService) getUserInfoUrl() (string, error) {
 	err = json.NewDecoder(res.Body).Decode(googleOpenIdConnectConfigurationDTO)
 
 	if err != nil {
-		formattedError := fmt.Errorf("error while decoding openid connect config response body: %v", err)
-		logger.Error(formattedError.Error())
-		return "", formattedError
+		return "", fmt.Errorf("error while decoding openid connect config response body: %v", err)
 	}
 
 	return googleOpenIdConnectConfigurationDTO.UserInfoEndpoint, nil
