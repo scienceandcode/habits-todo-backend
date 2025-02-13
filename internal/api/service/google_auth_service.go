@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -41,12 +42,18 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 	httpClient := &http.Client{}
 	res, err := httpClient.Post("https://oauth2.googleapis.com/token", "application/x-www-form-urlencoded", strings.NewReader(service.buildTokenRequestFormData(code).Encode()))
 
-	if err != nil || res.StatusCode != http.StatusOK {
+	if err != nil {
 		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
 		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed")})
 	}
 
 	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(res.Body)
+		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, string(body)))
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed")})
+	}
 
 	tokenResponseDTO := integration.NewGoogleOAuthTokenResponseDTO()
 	err = json.NewDecoder(res.Body).Decode(tokenResponseDTO)
