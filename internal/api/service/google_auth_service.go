@@ -32,6 +32,13 @@ func (*GoogleAuthService) BuildGoogleAuthURL() string {
 }
 
 func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *errors.Error {
+
+	validationErrors := service.validateCodeAndState(code, state)
+
+	if validationErrors != nil {
+		return validationErrors
+	}
+
 	decryptedState, _ := common.DecryptAES(state)
 	defaultErrorMessage := "Error while exchanging code for token"
 
@@ -68,6 +75,24 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 	if err != nil {
 		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
 		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("token", "Error while saving token")})
+	}
+
+	return nil
+}
+
+func (*GoogleAuthService) validateCodeAndState(code, state string) *errors.Error {
+	dataValidationErrors := []*errors.FieldError{}
+
+	if code == "" {
+		dataValidationErrors = append(dataValidationErrors, errors.NewFieldError("code", "Code is required"))
+	}
+
+	if state == "" {
+		dataValidationErrors = append(dataValidationErrors, errors.NewFieldError("state", "State is required"))
+	}
+
+	if len(dataValidationErrors) > 0 {
+		return errors.NewError("Invalid request data", dataValidationErrors)
 	}
 
 	return nil
