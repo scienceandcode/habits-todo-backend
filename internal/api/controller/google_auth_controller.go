@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/scienceandcode/habits-todo-backend/internal/api"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
 )
 
@@ -26,7 +27,7 @@ func (controller *GoogleAuthController) AuthorizationCode(c *gin.Context) {
 
 	err := controller.service.ExchangeCodeForToken(code, state)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.ResponseBadRequest(c, err)
 		return
 	}
 
