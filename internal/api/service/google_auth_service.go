@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/scienceandcode/habits-todo-backend/internal/api/errors"
+	"github.com/scienceandcode/habits-todo-backend/internal/api/logger"
 	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/internal/repository"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
@@ -31,15 +32,18 @@ func (*GoogleAuthService) BuildGoogleAuthURL() string {
 
 func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *errors.Error {
 	decryptedState, _ := common.DecryptAES(state)
+	defaultErrorMessage := "Error while exchanging code for token"
+
 	if common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY") != decryptedState {
-		return errors.NewError("Error while exchanging code for token", []*errors.FieldError{errors.NewFieldError("state", "Invalid state")})
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("state", "Invalid state")})
 	}
 
 	httpClient := &http.Client{}
 	res, err := httpClient.Post("https://oauth2.googleapis.com/token", "application/x-www-form-urlencoded", strings.NewReader(service.buildTokenRequestFormData(code).Encode()))
 
 	if err != nil || res.StatusCode != http.StatusOK {
-		return errors.NewError("Error while exchanging code for token", []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed")})
+		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed")})
 	}
 
 	defer res.Body.Close()
@@ -48,13 +52,15 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 	err = json.NewDecoder(res.Body).Decode(tokenResponseDTO)
 
 	if err != nil {
-		return errors.NewError("Error while exchanging code for token", []*errors.FieldError{errors.NewFieldError("response", "Invalid auth response body")})
+		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("response", "Invalid auth response body")})
 	}
 
 	err = service.saveToken(tokenResponseDTO)
 
 	if err != nil {
-		return errors.NewError("Error while exchanging code for token", []*errors.FieldError{errors.NewFieldError("token", "Error while saving token")})
+		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("token", "Error while saving token")})
 	}
 
 	return nil
