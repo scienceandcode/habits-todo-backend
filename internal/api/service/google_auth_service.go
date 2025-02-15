@@ -39,7 +39,7 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 	}
 
 	decryptedState, _ := common.DecryptAES(state)
-	defaultErrorMessage := "Error while authenticating your Google account."
+	defaultErrorMessage := "Error while authenticating your Google account. Please try again."
 
 	if common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY") != decryptedState {
 		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("state", "Invalid origin state.")})
