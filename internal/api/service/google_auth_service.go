@@ -69,11 +69,50 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("response", "Invalid auth response body")})
 	}
 
+	tokenValidationError := service.validateTokenResponseDTO(tokenResponseDTO)
+
+	if tokenValidationError != nil {
+		return tokenValidationError
+	}
+
 	err = service.saveToken(tokenResponseDTO)
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
 		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("token", "Error while saving token")})
+	}
+
+	return nil
+}
+
+func (service *GoogleAuthService) validateTokenResponseDTO(tokenResponseDTO *integration.GoogleOAuthTokenResponseDTO) *errors.Error {
+	dataValidationErrors := []*errors.FieldError{}
+
+	scopeError := service.validateTokenScope(tokenResponseDTO.Scope)
+
+	if scopeError != nil {
+		dataValidationErrors = append(dataValidationErrors, scopeError)
+	}
+
+	if len(dataValidationErrors) > 0 {
+		return errors.NewError("Error while authenticating your google account", dataValidationErrors)
+	}
+
+	return nil
+}
+
+func (*GoogleAuthService) validateTokenScope(scopeStr string) *errors.FieldError {
+	granularRequiredScope := []string{
+		"https://www.googleapis.com/auth/calendar",
+		"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/userinfo.profile",
+		"openid",
+	}
+
+	for _, scope := range granularRequiredScope {
+		if !strings.Contains(scopeStr, scope) {
+			return errors.NewFieldError("scope", "You need to grant all required permissions to use HabitsTodo with your Google Calendar.")
+		}
 	}
 
 	return nil
