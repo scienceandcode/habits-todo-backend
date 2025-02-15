@@ -1,6 +1,6 @@
 ### Impacto
 
-> Descreva abaixo o impacto da sua alteração, bem como as explicações do funcionamento da alteração e motivações para decisões tomadas.
+> Descreva abaixo o impacto da sua alteração, explicando como ela afeta o sistema, os detalhes do seu funcionamento e as motivações por trás das decisões tomadas.
 
 ### Link da tarefa
 
