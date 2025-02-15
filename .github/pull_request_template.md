@@ -4,7 +4,7 @@
 
 ### Link da tarefa
 
-> Coloque uma referência à issue ou tarefa que originou esta PR.
+> Informe o link da issue ou tarefa relacionada a esta PR.
 
 ### Cenários testados
 
