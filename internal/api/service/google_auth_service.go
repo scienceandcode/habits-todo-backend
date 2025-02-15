@@ -32,7 +32,6 @@ func (*GoogleAuthService) BuildGoogleAuthURL() string {
 }
 
 func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *errors.Error {
-
 	validationErrors := service.validateCodeAndState(code, state)
 
 	if validationErrors != nil {
