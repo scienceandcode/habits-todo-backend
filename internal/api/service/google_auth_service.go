@@ -66,7 +66,7 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
-		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("response", "Auth Request Failed")})
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("response", "Auth request failed.")})
 	}
 
 	tokenValidationError := service.validateTokenResponseDTO(tokenResponseDTO)
@@ -95,7 +95,7 @@ func (service *GoogleAuthService) validateTokenResponseDTO(tokenResponseDTO *int
 	}
 
 	if len(dataValidationErrors) > 0 {
-		return errors.NewError("Error while authenticating your google account", dataValidationErrors)
+		return errors.NewError("Error while authenticating your google account.", dataValidationErrors)
 	}
 
 	return nil
@@ -130,7 +130,7 @@ func (*GoogleAuthService) validateCodeAndState(code, state string) *errors.Error
 	}
 
 	if len(dataValidationErrors) > 0 {
-		return errors.NewError("Invalid request data", dataValidationErrors)
+		return errors.NewError("Invalid request data.", dataValidationErrors)
 	}
 
 	return nil
