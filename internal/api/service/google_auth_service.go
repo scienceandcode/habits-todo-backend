@@ -39,10 +39,10 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 	}
 
 	decryptedState, _ := common.DecryptAES(state)
-	defaultErrorMessage := "Error while exchanging code for token"
+	defaultErrorMessage := "Error while authenticating your Google account."
 
 	if common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY") != decryptedState {
-		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("state", "Invalid state")})
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("state", "Invalid origin state.")})
 	}
 
 	httpClient := &http.Client{}
@@ -50,7 +50,7 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
-		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed")})
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed.")})
 	}
 
 	defer res.Body.Close()
@@ -58,7 +58,7 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 	if res.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(res.Body)
 		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, string(body)))
-		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed")})
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed.")})
 	}
 
 	tokenResponseDTO := integration.NewGoogleOAuthTokenResponseDTO()
@@ -66,7 +66,7 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
-		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("response", "Invalid auth response body")})
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("response", "Auth Request Failed")})
 	}
 
 	tokenValidationError := service.validateTokenResponseDTO(tokenResponseDTO)
@@ -79,7 +79,7 @@ func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *erro
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("%s: %s", defaultErrorMessage, err.Error()))
-		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("token", "Error while saving token")})
+		return errors.NewError(defaultErrorMessage, []*errors.FieldError{errors.NewFieldError("token", "Error while saving your credentials.")})
 	}
 
 	return nil
