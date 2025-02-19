@@ -30,10 +30,6 @@ func startHttpServer() {
 
 func setupDatabase() {
 	log.Println("[Infrastructure] Connecting to database...")
-	gormDbConnection := db.Init()
+	db.Init()
 	log.Println("[Infrastructure] Database connected...")
-
-	log.Println("[Infrastructure] Migrating pending models...")
-	db.MigrateModels(gormDbConnection)
-	log.Println("[Infrastructure] Models migrated...")
 }
