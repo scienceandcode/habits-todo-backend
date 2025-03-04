@@ -34,6 +34,7 @@ func setupDatabase() {
 	gormDbConnection := db.Init()
 	if environment.IsDevelopment() {
 		db.MigrateModels(gormDbConnection)
+		db.SeedAdminUser(gormDbConnection)
 	}
 	log.Println("[Infrastructure] Database connected...")
 }

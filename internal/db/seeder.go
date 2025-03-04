@@ -1,8 +1,7 @@
 package db
 
 import (
-	"log"
-
+	"github.com/scienceandcode/habits-todo-backend/internal/api/logger"
 	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 	"gorm.io/gorm"
@@ -16,11 +15,19 @@ func SeedAdminUser(db *gorm.DB) {
 		UserType: "ADMIN",
 	}
 
+	var existingAdminUser model.User
+	db.Where("email = ?", adminUser.Email).First(&existingAdminUser)
+
+	if existingAdminUser.ID != 0 {
+		logger.Info("[Seed] Admin user already exists")
+		return
+	}
+
 	result := db.Create(&adminUser)
 
 	if result.Error != nil {
-		log.Fatalln(result.Error)
+		logger.Fatal(result.Error.Error())
 	}
 
-	log.Println("[Seed] Admin user created")
+	logger.Info("[Seed] Admin user created")
 }

@@ -22,7 +22,10 @@ type User struct {
 func (user *User) BeforeCreate(tx *gorm.DB) error {
 	user.CreatedAt = time.Now()
 	user.EmailConfirmedAt = nil
-	user.UserType = "USER"
+
+	if user.UserType == "" {
+		user.UserType = "USER"
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
