@@ -5,20 +5,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/scienceandcode/habits-todo-backend/internal/api"
-	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
+	"github.com/scienceandcode/habits-todo-backend/internal/db"
 )
 
-type AdminController struct {
-	service *service.AdminService
-}
+type AdminController struct{}
 
 func (controller *AdminController) MigrateModels(c *gin.Context) {
-	controller.service.MigrateModels(c)
-	api.ResponseSuccess(c, http.StatusCreated, gin.H{"message": "Migration and seeding completed"})
+	db.MigrateModels(db.GetConnection())
+	api.ResponseSuccess(c, http.StatusCreated, gin.H{"message": "Model migrations completed"})
 }
 
-func NewAdminController(service *service.AdminService) *AdminController {
-	return &AdminController{
-		service: service,
-	}
+func NewAdminController() *AdminController {
+	return &AdminController{}
 }

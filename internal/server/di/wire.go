@@ -20,7 +20,6 @@ func InitializeHttpServer() *server.HttpServer {
 		controller.NewHealthController,
 		controller.NewUserAuthController,
 		controller.NewUserController,
-		service.NewAdminService,
 		service.NewGoogleAuthService,
 		service.NewHealthService,
 		service.NewJWTService,

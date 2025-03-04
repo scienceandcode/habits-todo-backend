@@ -28,8 +28,7 @@ func InitializeHttpServer() *server.HttpServer {
 	userAuthController := controller.NewUserAuthController(userAuthService)
 	userService := service.NewUserService(userRepository)
 	userController := controller.NewUserController(userService)
-	adminService := service.NewAdminService()
-	adminController := controller.NewAdminController(adminService)
+	adminController := controller.NewAdminController()
 	httpServer := server.NewHttpServer(healthController, googleAuthController, userAuthController, userController, adminController)
 	return httpServer
 }
