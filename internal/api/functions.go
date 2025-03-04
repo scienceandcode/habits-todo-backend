@@ -29,3 +29,7 @@ func ResponseUnauthorized(c *gin.Context, err error) {
 func ResponseNotFound(c *gin.Context, err *errors.Error) {
 	c.JSON(http.StatusNotFound, gin.H{"error": err})
 }
+
+func ResponseForbidden(c *gin.Context, err error) {
+	c.JSON(http.StatusForbidden, gin.H{"error": err})
+}

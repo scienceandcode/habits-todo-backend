@@ -19,6 +19,10 @@ type User struct {
 	UpdatedAt        time.Time  `json:"updated_at"`
 }
 
+func (user *User) IsAdmin() bool {
+	return user.UserType == "ADMIN"
+}
+
 func (user *User) BeforeCreate(tx *gorm.DB) error {
 	user.CreatedAt = time.Now()
 	user.EmailConfirmedAt = nil
