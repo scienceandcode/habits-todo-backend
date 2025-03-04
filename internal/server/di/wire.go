@@ -15,16 +15,18 @@ import (
 func InitializeHttpServer() *server.HttpServer {
 	wire.Build(
 		server.NewHttpServer,
-		controller.NewHealthController,
+		controller.NewAdminController,
 		controller.NewGoogleAuthController,
+		controller.NewHealthController,
 		controller.NewUserAuthController,
 		controller.NewUserController,
-		service.NewHealthService,
+		service.NewAdminService,
 		service.NewGoogleAuthService,
+		service.NewHealthService,
+		service.NewJWTService,
 		service.NewUserAuthService,
 		service.NewUserService,
 		repository.NewUserRepository,
-		service.NewJWTService,
 		db.GetConnection,
 	)
 	return &server.HttpServer{}
