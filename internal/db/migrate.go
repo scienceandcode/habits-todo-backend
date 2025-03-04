@@ -7,10 +7,10 @@ import (
 )
 
 func MigrateModels(db *gorm.DB) {
-	logger.Info("Migrating models")
+	logger.Info("[Infrastructure] Migrating pending models...")
 	db.AutoMigrate(
 		&model.GoogleOAuthToken{},
 		&model.User{},
 	)
-	logger.Info("Models migrated")
+	logger.Info("[Infrastructure] Models migrated...")
 }
