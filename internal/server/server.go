@@ -23,7 +23,7 @@ func (httpServer *HttpServer) registerRoutes(app *gin.Engine) {
 	route.GoogleAuthRoutes(httpServer.googleAuthController, rootGroup.Group("/google/auth"))
 	route.UserAuthRoutes(httpServer.userAuthController, rootGroup.Group("/user/auth"))
 	route.UserRoutes(httpServer.userController, rootGroup.Group("/user", middleware.AuthMiddleware()))
-	route.AdminRoutes(httpServer.adminController, rootGroup.Group("/admin", middleware.AdminMiddleware()))
+	route.AdminRoutes(httpServer.adminController, rootGroup.Group("/admin"))
 }
 
 func (httpServer *HttpServer) Run() {
