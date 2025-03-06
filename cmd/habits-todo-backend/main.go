@@ -7,6 +7,7 @@ import (
 	"github.com/scienceandcode/habits-todo-backend/internal/db"
 	"github.com/scienceandcode/habits-todo-backend/internal/server/di"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
+	"github.com/scienceandcode/habits-todo-backend/pkg/environment"
 )
 
 func main() {
@@ -31,9 +32,9 @@ func startHttpServer() {
 func setupDatabase() {
 	log.Println("[Infrastructure] Connecting to database...")
 	gormDbConnection := db.Init()
+	if environment.IsDevelopment() {
+		db.MigrateModels(gormDbConnection)
+		db.SeedAdminUser(gormDbConnection)
+	}
 	log.Println("[Infrastructure] Database connected...")
-
-	log.Println("[Infrastructure] Migrating pending models...")
-	db.MigrateModels(gormDbConnection)
-	log.Println("[Infrastructure] Models migrated...")
 }
