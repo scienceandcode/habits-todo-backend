@@ -5,10 +5,17 @@ POSTGRES_DATA_DIR := .docker/data/postgres
 ENV_FILE := .env
 ENV_EXAMPLE_FILE := .env.example
 
+# Nome do diretório GOPATH
+GOPATH_DIR := $(shell grep ^GOPATH= $(ENV_FILE) | cut -d '=' -f 2)
+
+# Verificação do Go
+check-go:
+	@which go > /dev/null || { echo "Go não encontrado! Instale o Go antes de continuar."; exit 1; }
+
 # Comando para criar o diretório e aplicar permissões
 .PHONY: setup
-setup: create-env create-dir
-	@echo "✅ Tudo pronto! O diretório foi criado, o arquivo .env foi configurado e as permissões foram aplicadas."
+setup: check-go create-env create-dir set-gopath install-wire
+	@echo "✅ Tudo pronto! O diretório foi criado, o arquivo .env foi configurado, o GOPATH foi configurado e o Wire foi instalado."
 
 # Alvo para criar o diretório
 .PHONY: create-dir
@@ -27,6 +34,32 @@ create-env:
 	else \
 		echo "📄 O arquivo $(ENV_FILE) já existe. Nenhuma ação necessária."; \
 	fi
+
+# Alvo para configurar o GOPATH
+.PHONY: set-gopath
+set-gopath:
+	@if [ -z "$(GOPATH_DIR)" ]; then \
+		echo "GOPATH não encontrado no arquivo .env"; \
+		exit 1; \
+	fi
+	@echo "🔧 Configurando o GOPATH..."
+	@if [ -n "$(shell echo $$SHELL | grep -E 'zsh')" ]; then \
+		echo "export GOPATH=$(GOPATH_DIR)" >> ~/.zshrc; \
+		echo "🚀 Lembre-se de reiniciar o terminal ou rodar 'source ~/.zshrc'"; \
+	elif [ -n "$(shell echo $$SHELL | grep -E 'bash')" ]; then \
+		echo "export GOPATH=$(GOPATH_DIR)" >> ~/.bashrc; \
+		echo "🚀 Lembre-se de reiniciar o terminal ou rodar 'source ~/.bashrc'"; \
+	else \
+		echo "Shell não suportado. Configure o GOPATH manualmente."; \
+	fi
+	@echo "GOPATH configurado para $(GOPATH_DIR)"
+
+# Alvo para instalar o Wire
+.PHONY: install-wire
+install-wire:
+	@echo "🔧 Instalando o Wire..."
+	go install github.com/google/wire/cmd/wire@latest
+	@echo "🔧 Wire instalado com sucesso!"
 
 # Limpa o diretório (opcional)
 .PHONY: clean
