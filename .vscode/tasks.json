@@ -10,11 +10,6 @@
             "label": "wire",
             "type": "shell",
             "command": "wire ${workspaceFolder}/internal/server/di/wire.go"
-        },
-        {
-            "label": "make setup",
-            "type": "shell",
-            "command": "make setup"
         }
     ]
 }
