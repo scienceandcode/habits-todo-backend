@@ -22,13 +22,13 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: test-pgadmin
+    container_name: pgadmin
     restart: always
     depends_on:
       - postgres-db
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL-root@localhost}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD-rootpassword}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL-user@test.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD-password}
     ports:
       - "${PGADMIN_PORT-8081}:80"
     volumes:
