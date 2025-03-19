@@ -58,7 +58,7 @@ set-gopath:
 .PHONY: install-wire
 install-wire:
 	@echo "🔧 Instalando o Wire..."
-	go install github.com/google/wire/cmd/wire@latest
+	$(shell $GOPATH/bin/go get github.com/google/wire/cmd/wire) 
 	@echo "🔧 Wire instalado com sucesso!"
 
 # Limpa o diretório (opcional)
