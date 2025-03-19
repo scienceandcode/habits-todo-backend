@@ -18,7 +18,7 @@ services:
     container_name: mailhog
     ports:
       - "${MAIL_PORT-1025}:1025"
-      - "8025:8025"
+      - "${MAILHOG_PORT-8025}:8025"
 
   pgadmin:
     image: dpage/pgadmin4:latest
