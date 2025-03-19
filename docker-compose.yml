@@ -13,3 +13,23 @@ services:
       - "${POSTGRES_PORT-5432}:5432"
     volumes:
       - ${POSTGRES_DATA_DIR-.docker/data/postgres}:/var/lib/postgresql/data
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "${MAIL_PORT-1025}:1025"
+      - "8025:8025"
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: test-pgadmin
+    restart: always
+    depends_on:
+      - postgres-db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL-root@localhost}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD-rootpassword}
+    ports:
+      - "${PGADMIN_PORT-8081}:80"
+    volumes:
+      - ./.docker/data/pgadmin:/var/lib/pgadmin
