@@ -1,5 +1,5 @@
-# Nome do diretório de dados do PostgreSQL
-POSTGRES_DATA_DIR := .docker/data/postgres
+# Nome do diretório de dados
+DATA_DIR := .docker/data
 
 # Nome do arquivo de configuração de ambiente
 ENV_FILE := .env
@@ -20,10 +20,10 @@ setup: check-go create-env create-dir set-gopath install-wire
 # Alvo para criar o diretório
 .PHONY: create-dir
 create-dir:
-	@echo "📁 Criando o diretório $(POSTGRES_DATA_DIR) e configurando as permissões..."
-	mkdir -p $(POSTGRES_DATA_DIR)
-	chown -R $(shell id -u):$(shell id -g) $(POSTGRES_DATA_DIR)
-	chmod -R 755 $(POSTGRES_DATA_DIR)
+	@echo "📁 Criando o diretório $(DATA_DIR) e configurando as permissões..."
+	mkdir -p $(DATA_DIR)
+	chown -R $(shell id -u):$(shell id -g) $(DATA_DIR)
+	chmod -R 755 $(DATA_DIR)
 
 # Alvo para copiar o arquivo .env.example para .env, se não existir
 .PHONY: create-env
