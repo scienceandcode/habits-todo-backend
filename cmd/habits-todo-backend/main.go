@@ -5,6 +5,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/scienceandcode/habits-todo-backend/internal/db"
+	"github.com/scienceandcode/habits-todo-backend/internal/i18n"
 	"github.com/scienceandcode/habits-todo-backend/internal/server/di"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 	"github.com/scienceandcode/habits-todo-backend/pkg/environment"
@@ -14,6 +15,7 @@ func main() {
 	log.Println("[HabitsTodo] Service Started")
 
 	godotenv.Load()
+	i18n.Init()
 
 	setupDatabase()
 	startHttpServer()
