@@ -34,7 +34,7 @@ Este repositório contém o back-end com todas funcionalidades (API first) do pr
   - CockroachDB (postgres)
 - Front-end:
   - KMM (Kotlin Multiplatform Mobile): Android and IOS
- 
+
 Para maiores informações sobre a estrutura e documentações do projeto, consulte a [Wiki](https://github.com/scienceandcode/habits-todo-backend/wiki).
 
 ## Setup
@@ -52,6 +52,8 @@ Para maiores informações sobre a estrutura e documentações do projeto, consu
 make setup
 ```
 
+> Este comando irá configurar a variável GOPATH, criar o diretório de volumes do docker, copiar o arquivo .env.example para .env (se não existir) e instalar o Wire.
+
 > Realize eventuais ajustes nas portas do `.env` caso alguma porta já esteja ocupada em seu ambiente local.
 
 2. Para subir o container docker:
@@ -65,7 +67,7 @@ docker compose up
 go mod tidy
 ```
 
-4. Para iniciar o projeto, execute: 
+4. Para iniciar o projeto, execute:
 
 ```
 go run cmd/habits-todo-backend/main.go
