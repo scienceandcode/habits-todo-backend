@@ -52,7 +52,7 @@ Para maiores informações sobre a estrutura e documentações do projeto, consu
 make setup
 ```
 
-> Este comando irá configurar a variável GOPATH, criar o diretório de dados do PostgreSQL, copiar o arquivo .env.example para .env (se não existir) e instalar o Wire.
+> Este comando irá configurar a variável GOPATH, criar o diretório de volumes do docker, copiar o arquivo .env.example para .env (se não existir) e instalar o Wire.
 
 > Realize eventuais ajustes nas portas do `.env` caso alguma porta já esteja ocupada em seu ambiente local.
 
