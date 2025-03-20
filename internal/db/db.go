@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -43,11 +42,4 @@ func Init() *gorm.DB {
 	gormDbConnection = db
 
 	return db
-}
-
-func MigrateModels(db *gorm.DB) {
-	db.AutoMigrate(
-		&model.GoogleOAuthToken{},
-		&model.User{},
-	)
 }

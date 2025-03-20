@@ -6,11 +6,10 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/scienceandcode/habits-todo-backend/pkg/common"
 )
 
-type JWTService struct {
-	SecretKey string
-}
+type JWTService struct{}
 
 func (j *JWTService) GenerateJWT(userID uint) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -18,7 +17,7 @@ func (j *JWTService) GenerateJWT(userID uint) (string, error) {
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	return token.SignedString([]byte(j.SecretKey))
+	return token.SignedString([]byte(common.GetEnv("JWT_SECRET_KEY")))
 }
 
 func (j *JWTService) ValidateJWT(tokenString string) (uint, error) {
@@ -26,7 +25,7 @@ func (j *JWTService) ValidateJWT(tokenString string) (uint, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return []byte(j.SecretKey), nil
+		return []byte(common.GetEnv("JWT_SECRET_KEY")), nil
 	})
 
 	if err != nil {
@@ -46,8 +45,6 @@ func (j *JWTService) ValidateJWT(tokenString string) (uint, error) {
 	return 0, errors.New("invalid token")
 }
 
-func NewJWTService(secretKey string) *JWTService {
-	return &JWTService{
-		SecretKey: secretKey,
-	}
+func NewJWTService() *JWTService {
+	return &JWTService{}
 }

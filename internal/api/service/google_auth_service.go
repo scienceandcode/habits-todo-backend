@@ -3,12 +3,14 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/scienceandcode/habits-todo-backend/internal/api/errors"
+	"github.com/scienceandcode/habits-todo-backend/internal/api/logger"
 	"github.com/scienceandcode/habits-todo-backend/internal/model"
 	"github.com/scienceandcode/habits-todo-backend/internal/repository"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
@@ -16,6 +18,8 @@ import (
 )
 
 type GoogleAuthService struct{}
+
+const DEFAULT_ERROR_MESSAGE = "Error while authenticating your google account. Please try again."
 
 func (*GoogleAuthService) BuildGoogleAuthURL() string {
 	clientId := common.GetEnv("GOOGLE_CLOUD_CLIENT_ID")
@@ -29,35 +33,105 @@ func (*GoogleAuthService) BuildGoogleAuthURL() string {
 	return fmt.Sprintf(url, clientId, redirectUri, state, nonce, scope)
 }
 
-func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) error {
+func (service *GoogleAuthService) ExchangeCodeForToken(code, state string) *errors.Error {
+	validationErrors := service.validateCodeAndState(code, state)
+
+	if validationErrors != nil {
+		return validationErrors
+	}
+
 	decryptedState, _ := common.DecryptAES(state)
+
 	if common.GetEnv("GOOGLE_CLOUD_AUTH_STATE_SECRET_KEY") != decryptedState {
-		return fmt.Errorf("invalid state")
+		return errors.NewError(DEFAULT_ERROR_MESSAGE, []*errors.FieldError{errors.NewFieldError("state", "Invalid origin state.")})
 	}
 
 	httpClient := &http.Client{}
 	res, err := httpClient.Post("https://oauth2.googleapis.com/token", "application/x-www-form-urlencoded", strings.NewReader(service.buildTokenRequestFormData(code).Encode()))
 
-	if err != nil || res.StatusCode != http.StatusOK {
-		log.Printf("Error while exchanging code for token: %v", err)
-		return fmt.Errorf("error while exchanging code for token")
+	if err != nil {
+		logger.Error(fmt.Sprintf("%s: %s", DEFAULT_ERROR_MESSAGE, err.Error()))
+		return errors.NewError(DEFAULT_ERROR_MESSAGE, []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed.")})
 	}
 
 	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(res.Body)
+		logger.Error(fmt.Sprintf("%s: %s", DEFAULT_ERROR_MESSAGE, string(body)))
+		return errors.NewError(DEFAULT_ERROR_MESSAGE, []*errors.FieldError{errors.NewFieldError("statusCode", "Auth request failed.")})
+	}
 
 	tokenResponseDTO := integration.NewGoogleOAuthTokenResponseDTO()
 	err = json.NewDecoder(res.Body).Decode(tokenResponseDTO)
 
 	if err != nil {
-		log.Printf("Error while decoding response body: %v", err)
-		return fmt.Errorf("error while decoding token response body")
+		logger.Error(fmt.Sprintf("%s: %s", DEFAULT_ERROR_MESSAGE, err.Error()))
+		return errors.NewError(DEFAULT_ERROR_MESSAGE, []*errors.FieldError{errors.NewFieldError("response", "Auth request failed.")})
+	}
+
+	tokenValidationError := service.validateTokenResponseDTO(tokenResponseDTO)
+
+	if tokenValidationError != nil {
+		return tokenValidationError
 	}
 
 	err = service.saveToken(tokenResponseDTO)
 
 	if err != nil {
-		log.Printf("Error while saving token: %v", err)
-		return fmt.Errorf("error while saving token")
+		logger.Error(fmt.Sprintf("%s: %s", DEFAULT_ERROR_MESSAGE, err.Error()))
+		return errors.NewError(DEFAULT_ERROR_MESSAGE, []*errors.FieldError{errors.NewFieldError("token", "Error while saving your credentials.")})
+	}
+
+	return nil
+}
+
+func (service *GoogleAuthService) validateTokenResponseDTO(tokenResponseDTO *integration.GoogleOAuthTokenResponseDTO) *errors.Error {
+	dataValidationErrors := []*errors.FieldError{}
+
+	scopeError := service.validateTokenScope(tokenResponseDTO.Scope)
+
+	if scopeError != nil {
+		dataValidationErrors = append(dataValidationErrors, scopeError)
+	}
+
+	if len(dataValidationErrors) > 0 {
+		return errors.NewError(DEFAULT_ERROR_MESSAGE, dataValidationErrors)
+	}
+
+	return nil
+}
+
+func (*GoogleAuthService) validateTokenScope(scopeStr string) *errors.FieldError {
+	granularRequiredScope := []string{
+		"https://www.googleapis.com/auth/calendar",
+		"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/userinfo.profile",
+		"openid",
+	}
+
+	for _, scope := range granularRequiredScope {
+		if !strings.Contains(scopeStr, scope) {
+			return errors.NewFieldError("scope", "You need to grant all required permissions to use HabitsTodo with your Google Calendar.")
+		}
+	}
+
+	return nil
+}
+
+func (*GoogleAuthService) validateCodeAndState(code, state string) *errors.Error {
+	dataValidationErrors := []*errors.FieldError{}
+
+	if code == "" {
+		dataValidationErrors = append(dataValidationErrors, errors.NewFieldError("code", "Code is required"))
+	}
+
+	if state == "" {
+		dataValidationErrors = append(dataValidationErrors, errors.NewFieldError("state", "State is required"))
+	}
+
+	if len(dataValidationErrors) > 0 {
+		return errors.NewError(DEFAULT_ERROR_MESSAGE, dataValidationErrors)
 	}
 
 	return nil

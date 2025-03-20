@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/scienceandcode/habits-todo-backend/internal/api"
 	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
 )
 
@@ -16,21 +17,14 @@ func (controller *GoogleAuthController) StartGoogleAuthorization(c *gin.Context)
 }
 
 func (controller *GoogleAuthController) AuthorizationCode(c *gin.Context) {
-	code := c.Query("code")
-	state := c.Query("state")
+	err := controller.service.ExchangeCodeForToken(c.Query("code"), c.Query("state"))
 
-	if code == "" || state == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "code and state are required"})
-		return
-	}
-
-	err := controller.service.ExchangeCodeForToken(code, state)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.ResponseBadRequest(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success"})
+	api.ResponseSuccess(c, http.StatusOK, gin.H{"message": "success"})
 }
 
 func NewGoogleAuthController(service *service.GoogleAuthService) *GoogleAuthController {

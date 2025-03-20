@@ -4,17 +4,18 @@ import (
 	"log"
 
 	"github.com/joho/godotenv"
-	"github.com/scienceandcode/habits-todo-backend/internal/api/controller"
-	"github.com/scienceandcode/habits-todo-backend/internal/api/service"
 	"github.com/scienceandcode/habits-todo-backend/internal/db"
-	"github.com/scienceandcode/habits-todo-backend/internal/server"
+	"github.com/scienceandcode/habits-todo-backend/internal/i18n"
+	"github.com/scienceandcode/habits-todo-backend/internal/server/di"
 	"github.com/scienceandcode/habits-todo-backend/pkg/common"
+	"github.com/scienceandcode/habits-todo-backend/pkg/environment"
 )
 
 func main() {
 	log.Println("[HabitsTodo] Service Started")
 
 	godotenv.Load()
+	i18n.Init()
 
 	setupDatabase()
 	startHttpServer()
@@ -23,33 +24,19 @@ func main() {
 }
 
 func startHttpServer() {
-	httpServer := setupHttpServer()
+	httpServer := di.InitializeHttpServer()
 
 	log.Println("[HttpServer] Starting...")
 	go httpServer.Run()
 	log.Println("[HttpServer] Started")
 }
 
-func setupHttpServer() *server.HttpServer {
-	healthController := controller.NewHealthController(service.NewHealthService())
-	googleAuthController := controller.NewGoogleAuthController(service.NewGoogleAuthService())
-	userAuthController := controller.NewUserAuthController(service.NewUserAuthService())
-	userController := controller.NewUserController(service.NewUserService())
-
-	return server.NewHttpServer(
-		healthController,
-		googleAuthController,
-		userAuthController,
-		userController,
-	)
-}
-
 func setupDatabase() {
 	log.Println("[Infrastructure] Connecting to database...")
 	gormDbConnection := db.Init()
+	if environment.IsDevelopment() {
+		db.MigrateModels(gormDbConnection)
+		db.SeedAdminUser(gormDbConnection)
+	}
 	log.Println("[Infrastructure] Database connected...")
-
-	log.Println("[Infrastructure] Migrating pending models...")
-	db.MigrateModels(gormDbConnection)
-	log.Println("[Infrastructure] Models migrated...")
 }

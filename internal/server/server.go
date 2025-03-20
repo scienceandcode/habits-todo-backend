@@ -13,6 +13,7 @@ type HttpServer struct {
 	googleAuthController *controller.GoogleAuthController
 	userAuthController   *controller.UserAuthController
 	userController       *controller.UserController
+	adminController      *controller.AdminController
 }
 
 func (httpServer *HttpServer) registerRoutes(app *gin.Engine) {
@@ -22,6 +23,7 @@ func (httpServer *HttpServer) registerRoutes(app *gin.Engine) {
 	route.GoogleAuthRoutes(httpServer.googleAuthController, rootGroup.Group("/google/auth"))
 	route.UserAuthRoutes(httpServer.userAuthController, rootGroup.Group("/user/auth"))
 	route.UserRoutes(httpServer.userController, rootGroup.Group("/user", middleware.AuthMiddleware()))
+	route.AdminRoutes(httpServer.adminController, rootGroup.Group("/admin", middleware.AuthMiddleware(), middleware.AdminUserMiddleware()))
 }
 
 func (httpServer *HttpServer) Run() {
@@ -41,11 +43,13 @@ func NewHttpServer(
 	gac *controller.GoogleAuthController,
 	uac *controller.UserAuthController,
 	uc *controller.UserController,
+	ac *controller.AdminController,
 ) *HttpServer {
 	return &HttpServer{
 		healthController:     hc,
 		googleAuthController: gac,
 		userAuthController:   uac,
 		userController:       uc,
+		adminController:      ac,
 	}
 }
