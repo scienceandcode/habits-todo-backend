@@ -56,8 +56,6 @@ make setup
 
 > Realize eventuais ajustes nas portas do `.env` caso alguma porta já esteja ocupada em seu ambiente local.
 
-> O GOPATH é o diretório onde o Go instala as dependências e o diretório onde o projeto será clonado. O diretório padrão é `$HOME/go`, mas pode ser alterado conforme a necessidade.
-
 2. Para subir o container docker:
 ```
 docker compose up
